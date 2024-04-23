@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: Video-App
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/video_spring_app
+    username: postgres
+    password: dung28011951
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+cloud:
+  endpointUrl: https://s3.ap-southeast-2.amazonaws.com
+  aws:
+    credentials:
+      access-key: AKIAQ3EGWTN6DUXHLDM6
+      secret-key: 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
+    region:
+      static: ap-southeast-2
+    stack:
+      auto: false
+    bucket:
+      name: movie-spring
