@@ -67,6 +67,8 @@ public class AuthServiceImpl implements AuthService {
         User userByEmail = this.userRepository.findByEmail(authRegisterDto.getEmail());
         if (userByEmail != null) {
             return new DataResponse("Email is exist!");
+        } else if (!ValidationRegex.isEmail(authRegisterDto.getEmail())) {
+            return new DataResponse("Email is invalid!");
         }
         User userByPhone = this.userRepository.findByPhone(authRegisterDto.getPhone());
         if (userByPhone != null) {

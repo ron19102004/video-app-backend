@@ -1,4 +1,8 @@
 spring:
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
   application:
     name: Video-App
   datasource:
@@ -18,11 +22,12 @@ cloud:
   endpointUrl: https://s3.ap-southeast-2.amazonaws.com
   aws:
     credentials:
-      access-key: AKIAQ3EGWTN6DUXHLDM6
-      secret-key: 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
+      access-key: AKIAQ3EGWTN6CXOVNZMO
+      secret-key: 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
     region:
       static: ap-southeast-2
     stack:
       auto: false
     bucket:
       name: movie-spring
+

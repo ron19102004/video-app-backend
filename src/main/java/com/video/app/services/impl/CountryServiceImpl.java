@@ -3,6 +3,7 @@ package com.video.app.services.impl;
 import com.video.app.dto.country.CreateCountryDto;
 import com.video.app.dto.country.UpdateCountryDto;
 import com.video.app.entities.Country;
+import com.video.app.exceptions.ServiceException;
 import com.video.app.repositories.CountryRepository;
 import com.video.app.services.CountryService;
 import com.video.app.utils.DataResponse;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Transactional
+@Transactional(Transactional.TxType.MANDATORY)
 @Service
 public class CountryServiceImpl implements CountryService {
     @Autowired
@@ -40,18 +41,23 @@ public class CountryServiceImpl implements CountryService {
 
     @Override
     public Country update(Long id, UpdateCountryDto updateCountryDto) {
-        Country country = this.countryRepository.findById(id).orElse(null);
-        if (country == null) return null;
+        Country country = this
+                .countryRepository
+                .findById(id)
+                .orElseThrow(() -> new ServiceException("Country not found"));
         country.setName(updateCountryDto.getName());
         country.setSlug(ValidString.slugify(updateCountryDto.getName()));
         return this.entityManager.merge(country);
     }
 
     @Override
-    public DataResponse deleted(Long id) {
-        Country country = this.countryRepository.findById(id).orElse(null);
-        if (country == null) return new DataResponse("Country not found");
-        this.countryRepository.delete(country);
+    public DataResponse delete(Long id) {
+        Country country = this
+                .countryRepository
+                .findByIdAndDeleted(id, false)
+                .orElseThrow(() -> new ServiceException("Country not found"));
+        country.setDeleted(true);
+        this.entityManager.merge(country);
         return new DataResponse("Deleted!", true);
     }
 }

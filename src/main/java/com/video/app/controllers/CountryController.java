@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/countries")
 public class CountryController extends GlobalException {
@@ -29,7 +31,7 @@ public class CountryController extends GlobalException {
     }
 
     @GetMapping("")
-    public ResponseEntity<?> getAll() {
+    public ResponseEntity<List<Country>> getAll() {
         return ResponseEntity.ok(this.countryService.find());
     }
 
@@ -48,6 +50,6 @@ public class CountryController extends GlobalException {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<DataResponse> delete(@NotNull @PathVariable("id") Long id) {
-        return ResponseEntity.ok(this.countryService.deleted(id));
+        return ResponseEntity.ok(this.countryService.delete(id));
     }
 }

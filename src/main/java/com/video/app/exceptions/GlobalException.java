@@ -11,7 +11,7 @@ import java.nio.file.AccessDeniedException;
 
 @ControllerAdvice
 public abstract class GlobalException {
-//    @ExceptionHandler(Exception.class)
+    //    @ExceptionHandler(Exception.class)
 //    public ResponseEntity<?> handleException(Exception exception) {
 //        exception.printStackTrace();
 //        return ResponseEntity.badRequest()
@@ -23,10 +23,18 @@ public abstract class GlobalException {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new DataResponse("Password not true"));
     }
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<?> handle(AccessDeniedException exception) {
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
+                .body(new DataResponse(exception.getMessage()));
+    }
+
+    @ExceptionHandler(ServiceException.class)
+    public ResponseEntity<?> handle(ServiceException exception) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
                 .body(new DataResponse(exception.getMessage()));
     }
 }
