@@ -1,8 +1,9 @@
 package com.video.app.dto.country;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-@EqualsAndHashCode(callSuper = true)
-@Data
-public class UpdateCountryDto extends CreateCountryDto{
+import jakarta.validation.constraints.NotNull;
+
+public record UpdateCountryDto(
+        @NotNull
+        String name
+) {
 }

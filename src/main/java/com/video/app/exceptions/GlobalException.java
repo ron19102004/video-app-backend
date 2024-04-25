@@ -21,20 +21,20 @@ public abstract class GlobalException {
     public ResponseEntity<?> handle(BadCredentialsException exception) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new DataResponse("Password not true"));
+                .body(new DataResponse("Password not true", null, false));
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<?> handle(AccessDeniedException exception) {
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
-                .body(new DataResponse(exception.getMessage()));
+                .body(new DataResponse(exception.getMessage(), null, false));
     }
 
     @ExceptionHandler(ServiceException.class)
     public ResponseEntity<?> handle(ServiceException exception) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new DataResponse(exception.getMessage()));
+                .body(new DataResponse(exception.getMessage(), null, false));
     }
 }

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Transactional(Transactional.TxType.MANDATORY)
+@Transactional
 @Service
 public class ReportServiceImpl implements ReportService {
     @Autowired
@@ -34,25 +34,25 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public DataResponse create(CreateReportDto createReportDto) {
-        if (!ValidationRegex.isEmail(createReportDto.getEmail()))
-            return new DataResponse("Email is invalid!");
+        if (!ValidationRegex.isEmail(createReportDto.email()))
+            return new DataResponse("Email is invalid!",null,false);
         Report report = Report
                 .builder()
-                .email(createReportDto.getEmail())
-                .content(createReportDto.getContent())
+                .email(createReportDto.email())
+                .content(createReportDto.content())
                 .checked(false)
                 .build();
         this.reportRepository.save(report);
-        return new DataResponse("Created!", true);
+        return new DataResponse("Created!",null,true);
     }
 
     @Override
     public DataResponse check(Long id, String reply) {
         Report report = this.reportRepository.findByIdAndChecked(id, false);
-        if (report == null) return new DataResponse("Report not found!");
+        if (report == null) return new DataResponse("Report not found!",null,false);
         //reply handling -- HANDLED YET
         report.setChecked(true);
         this.entityManager.merge(report);
-        return new DataResponse("Handled!", true);
+        return new DataResponse("Handled!", null,true);
     }
 }

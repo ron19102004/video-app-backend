@@ -25,11 +25,8 @@ public class CategoryController extends GlobalException {
             @RequestParam("name") @NotNull String name,
             @NotNull @RequestParam("file") MultipartFile file
     ) {
-        return ResponseEntity.ok(DataResponse.builder()
-                .status(true)
-                .message("Created!")
-                .data(this.categoryService.create(file, name))
-                .build());
+        Category category = this.categoryService.create(file, name);
+        return ResponseEntity.ok(new DataResponse("Created!", category, true));
     }
 
     @GetMapping("")

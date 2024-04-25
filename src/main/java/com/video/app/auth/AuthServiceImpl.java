@@ -41,54 +41,50 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public DataResponse login(AuthLoginDto authLoginDto) {
-        User user = findUser(authLoginDto.getUsername());
+        User user = findUser(authLoginDto.username());
         if (user == null) {
-            return new DataResponse("User not found");
+            return new DataResponse("User not found", null, false);
         }
         Authentication authentication = this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 user.getUsername(),
-                authLoginDto.getPassword()
+                authLoginDto.password()
         ));
         if (!authentication.isAuthenticated()) {
-            return new DataResponse("Password not valid");
+            return new DataResponse("Password not valid", null, false);
         }
         String accessToken = this.jwtService.generate(user);
         Map<String, String> data = new HashMap<>();
         data.put("access-token", accessToken);
-        return DataResponse.builder()
-                .data(data)
-                .message("Login successfully!")
-                .status(true)
-                .build();
+        return new DataResponse("Login successfully!", data, true);
     }
 
     @Override
     public DataResponse register(AuthRegisterDto authRegisterDto) {
-        User userByEmail = this.userRepository.findByEmail(authRegisterDto.getEmail());
+        User userByEmail = this.userRepository.findByEmail(authRegisterDto.email());
         if (userByEmail != null) {
-            return new DataResponse("Email is exist!");
-        } else if (!ValidationRegex.isEmail(authRegisterDto.getEmail())) {
-            return new DataResponse("Email is invalid!");
+            return new DataResponse("Email is exist!", null, false);
+        } else if (!ValidationRegex.isEmail(authRegisterDto.email())) {
+            return new DataResponse("Email is invalid!", null, false);
         }
-        User userByPhone = this.userRepository.findByPhone(authRegisterDto.getPhone());
+        User userByPhone = this.userRepository.findByPhone(authRegisterDto.phone());
         if (userByPhone != null) {
-            return new DataResponse("Phone is exist!");
+            return new DataResponse("Phone is exist!", null, false);
         }
-        User userByUsername = this.userRepository.findByUsername(authRegisterDto.getUsername()).orElse(null);
+        User userByUsername = this.userRepository.findByUsername(authRegisterDto.username()).orElse(null);
         if (userByUsername != null) {
-            return new DataResponse("Username is exist!");
+            return new DataResponse("Username is exist!", null, false);
         }
         User user = User
                 .builder()
-                .username(authRegisterDto.getUsername())
-                .email(authRegisterDto.getEmail())
+                .username(authRegisterDto.username())
+                .email(authRegisterDto.email())
                 .confirmed(false)
                 .role(Role.USER)
-                .password(this.passwordEncoder.encode(authRegisterDto.getPassword()))
-                .fullName(authRegisterDto.getFullName())
-                .phone(authRegisterDto.getPhone())
+                .password(this.passwordEncoder.encode(authRegisterDto.password()))
+                .fullName(authRegisterDto.fullName())
+                .phone(authRegisterDto.phone())
                 .build();
         this.userRepository.save(user);
-        return new DataResponse("Sign up successfully!", true);
+        return new DataResponse("Sign up successfully!", null, true);
     }
 }

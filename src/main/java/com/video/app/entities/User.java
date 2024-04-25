@@ -1,5 +1,6 @@
 package com.video.app.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -56,6 +57,7 @@ public class User extends BaseEntity implements UserDetails {
         return List.of(new SimpleGrantedAuthority(this.role.toString()));
     }
 
+    @JsonIgnore
     @Override
     public String getPassword() {
         return this.password;

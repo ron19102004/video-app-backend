@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Transactional(Transactional.TxType.MANDATORY)
+@Transactional
 @Service
 public class CountryServiceImpl implements CountryService {
     @Autowired
@@ -28,9 +28,9 @@ public class CountryServiceImpl implements CountryService {
     public Country create(CreateCountryDto createCountryDto) {
         return this.countryRepository.save(Country
                 .builder()
-                .name(createCountryDto.getName())
+                .name(createCountryDto.name())
                 .deleted(false)
-                .slug(ValidString.slugify(createCountryDto.getName()))
+                .slug(ValidString.slugify(createCountryDto.name()))
                 .build());
     }
 
@@ -45,8 +45,8 @@ public class CountryServiceImpl implements CountryService {
                 .countryRepository
                 .findById(id)
                 .orElseThrow(() -> new ServiceException("Country not found"));
-        country.setName(updateCountryDto.getName());
-        country.setSlug(ValidString.slugify(updateCountryDto.getName()));
+        country.setName(updateCountryDto.name());
+        country.setSlug(ValidString.slugify(updateCountryDto.name()));
         return this.entityManager.merge(country);
     }
 
@@ -58,6 +58,6 @@ public class CountryServiceImpl implements CountryService {
                 .orElseThrow(() -> new ServiceException("Country not found"));
         country.setDeleted(true);
         this.entityManager.merge(country);
-        return new DataResponse("Deleted!", true);
+        return new DataResponse("Deleted!", null,true);
     }
 }

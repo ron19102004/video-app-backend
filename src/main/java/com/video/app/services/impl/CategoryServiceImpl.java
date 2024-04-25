@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-@Transactional(Transactional.TxType.MANDATORY)
+@Transactional
 @Service
 public class CategoryServiceImpl implements CategoryService {
     @Autowired
@@ -66,7 +66,7 @@ public class CategoryServiceImpl implements CategoryService {
         category.setName(name);
         category.setSlug(ValidString.slugify(name));
         this.entityManager.merge(category);
-        return new DataResponse("Updated!", true);
+        return new DataResponse("Updated!", null, true);
     }
 
     @Override
@@ -75,6 +75,6 @@ public class CategoryServiceImpl implements CategoryService {
                 .orElseThrow(() -> new ServiceException("Category not found"));
         category.setDeleted(true);
         this.entityManager.merge(category);
-        return new DataResponse("Deleted!", true);
+        return new DataResponse("Deleted!", null, true);
     }
 }

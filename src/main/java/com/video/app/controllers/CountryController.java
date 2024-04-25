@@ -23,11 +23,8 @@ public class CountryController extends GlobalException {
     @PostMapping("/new")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<DataResponse> create(@NotNull @RequestBody CreateCountryDto createCountryDto) {
-        return ResponseEntity.ok(DataResponse.builder()
-                .data(this.countryService.create(createCountryDto))
-                .message("Created!")
-                .status(true)
-                .build());
+        Country country = this.countryService.create(createCountryDto);
+        return ResponseEntity.ok(new DataResponse("Created!",country,true));
     }
 
     @GetMapping("")
@@ -40,11 +37,7 @@ public class CountryController extends GlobalException {
     public ResponseEntity<DataResponse> update(@NotNull @PathVariable("id") Long id,
                                                @NotNull @RequestBody UpdateCountryDto updateCountryDto) {
         Country country = this.countryService.update(id, updateCountryDto);
-        return ResponseEntity.ok(DataResponse.builder()
-                .data(country)
-                .message(country == null ? "Update Failed!" : "Updated!")
-                .status(true)
-                .build());
+        return ResponseEntity.ok(new DataResponse(country == null ? "Update Failed!" : "Updated!",country,true));
     }
 
     @DeleteMapping("/{id}")
