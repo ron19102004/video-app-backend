@@ -34,24 +34,33 @@ public class User extends BaseEntity implements UserDetails {
     @Column(nullable = false)
     private Role role;
 
-    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JsonIgnore
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "otp", referencedColumnName = "id")
     private OTP otp;
-    @OneToMany(mappedBy = "uploader",fetch = FetchType.LAZY)
+    @JsonIgnore
+    @OneToMany(mappedBy = "uploader", fetch = FetchType.LAZY)
     private List<Video> videos;
-    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<View> views;
-    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Playlist> playlists;
-    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Comment> comments;
-    @OneToMany(mappedBy = "follower",fetch = FetchType.LAZY)
+    @JsonIgnore
+    @OneToMany(mappedBy = "follower", fetch = FetchType.LAZY)
     private List<Follow> followers;
-    @OneToMany(mappedBy = "followed",fetch = FetchType.LAZY)
+    @JsonIgnore
+    @OneToMany(mappedBy = "followed", fetch = FetchType.LAZY)
     private List<Follow> listFollowed;
-    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<VIP> vips;
 
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(this.role.toString()));
@@ -68,21 +77,25 @@ public class User extends BaseEntity implements UserDetails {
         return this.username;
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isEnabled() {
         return true;

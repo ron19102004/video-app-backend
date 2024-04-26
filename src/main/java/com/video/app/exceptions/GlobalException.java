@@ -20,8 +20,8 @@ public abstract class GlobalException {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<?> handle(BadCredentialsException exception) {
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(new DataResponse("Password not true", null, false));
+                .status(HttpStatus.OK)
+                .body(new DataResponse("Password incorrect", null, false));
     }
 
     @ExceptionHandler(AccessDeniedException.class)

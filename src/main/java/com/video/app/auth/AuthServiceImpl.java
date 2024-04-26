@@ -53,22 +53,30 @@ public class AuthServiceImpl implements AuthService {
             return new DataResponse("Password not valid", null, false);
         }
         String accessToken = this.jwtService.generate(user);
-        Map<String, String> data = new HashMap<>();
+        Map<String, Object> data = new HashMap<>();
         data.put("access-token", accessToken);
+        data.put("user", user);
         return new DataResponse("Login successfully!", data, true);
     }
 
     @Override
     public DataResponse register(AuthRegisterDto authRegisterDto) {
-        User userByEmail = this.userRepository.findByEmail(authRegisterDto.email());
-        if (userByEmail != null) {
-            return new DataResponse("Email is exist!", null, false);
-        } else if (!ValidationRegex.isEmail(authRegisterDto.email())) {
+
+        if (!ValidationRegex.isEmail(authRegisterDto.email())) {
             return new DataResponse("Email is invalid!", null, false);
+        } else {
+            User userByEmail = this.userRepository.findByEmail(authRegisterDto.email());
+            if (userByEmail != null) {
+                return new DataResponse("Email is exist!", null, false);
+            }
         }
-        User userByPhone = this.userRepository.findByPhone(authRegisterDto.phone());
-        if (userByPhone != null) {
-            return new DataResponse("Phone is exist!", null, false);
+        if (!ValidationRegex.isPhone(authRegisterDto.phone())) {
+            return new DataResponse("Phone is invalid!", null, false);
+        } else {
+            User userByPhone = this.userRepository.findByPhone(authRegisterDto.phone());
+            if (userByPhone != null) {
+                return new DataResponse("Phone is exist!", null, false);
+            }
         }
         User userByUsername = this.userRepository.findByUsername(authRegisterDto.username()).orElse(null);
         if (userByUsername != null) {
