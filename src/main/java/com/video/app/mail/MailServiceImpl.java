@@ -1,10 +1,8 @@
 package com.video.app.mail;
 
 import com.video.app.dto.mail.MailSendMessageDto;
-import com.video.app.entities.OTP;
 import com.video.app.entities.User;
-import com.video.app.repositories.OTPRepository;
-import com.video.app.utils.OTPGenerator;
+import com.video.app.services.OTPService;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +10,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +21,8 @@ public class MailServiceImpl implements MailService {
     @Value("${spring.mail.username}")
     private String username;
     @Autowired
-    private OTPRepository otpRepository;
+    private OTPService otpService;
+
 
     @Override
     public void create(MailSendMessageDto mailSendMessageDto) throws MessagingException {
@@ -97,17 +97,12 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public void sendMailOTP(User user) throws MessagingException {
-        String otp = OTPGenerator.generateOTP(6);
+        String otp = this.otpService.generate(user);
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setFrom(username);
         simpleMailMessage.setTo(user.getEmail());
         simpleMailMessage.setSubject("Your OTP Code");
         simpleMailMessage.setText("Hello,\n\nHere is your OTP code: " + otp + "\n\nBest regards.");
         this.javaMailSender.send(simpleMailMessage);
-        OTP otpEntity = OTP.builder()
-                .value(otp)
-                .user(user)
-                .build();
-        this.otpRepository.save(otpEntity);
     }
 }

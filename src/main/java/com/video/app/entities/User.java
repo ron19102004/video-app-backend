@@ -33,10 +33,11 @@ public class User extends BaseEntity implements UserDetails {
     private Boolean confirmed;
     @Column(nullable = false)
     private Role role;
+    @ColumnDefault("false")
+    private Boolean isTwoFactorAuthentication;
 
     @JsonIgnore
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "otp", referencedColumnName = "id")
+    @OneToOne(mappedBy = "user",fetch = FetchType.LAZY)
     private OTP otp;
     @JsonIgnore
     @OneToMany(mappedBy = "uploader", fetch = FetchType.LAZY)
