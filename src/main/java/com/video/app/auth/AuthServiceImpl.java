@@ -5,9 +5,11 @@ import com.video.app.dto.auth.AuthRegisterDto;
 import com.video.app.entities.Role;
 import com.video.app.entities.User;
 import com.video.app.jwt.JwtService;
+import com.video.app.mail.MailService;
 import com.video.app.repositories.UserRepository;
 import com.video.app.utils.DataResponse;
 import com.video.app.utils.ValidationRegex;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,6 +30,8 @@ public class AuthServiceImpl implements AuthService {
     private AuthenticationManager authenticationManager;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private MailService mailService;
 
     private User findUser(String string) {
         if (ValidationRegex.isEmail(string)) {
@@ -93,6 +97,11 @@ public class AuthServiceImpl implements AuthService {
                 .phone(authRegisterDto.phone())
                 .build();
         this.userRepository.save(user);
+        try {
+            mailService.sendMailThankForRegister(user);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
         return new DataResponse("Sign up successfully!", null, true);
     }
 }

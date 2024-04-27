@@ -36,7 +36,7 @@ public class CountryServiceImpl implements CountryService {
 
     @Override
     public List<Country> find() {
-        return this.countryRepository.findAll();
+        return this.countryRepository.findByDeleted(false);
     }
 
     @Override

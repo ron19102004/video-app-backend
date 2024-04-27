@@ -1,6 +1,7 @@
 package com.video.app.exceptions;
 
 import com.video.app.utils.DataResponse;
+import jakarta.mail.MessagingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -35,6 +36,12 @@ public abstract class GlobalException {
     public ResponseEntity<?> handle(ServiceException exception) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
+                .body(new DataResponse(exception.getMessage(), null, false));
+    }
+    @ExceptionHandler(MessagingException.class)
+    public ResponseEntity<?> handle(MessagingException exception) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_GATEWAY)
                 .body(new DataResponse(exception.getMessage(), null, false));
     }
 }

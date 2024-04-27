@@ -39,7 +39,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<Category> find() {
-        return this.categoryRepository.findAll();
+        return this.categoryRepository.findByDeleted(false);
     }
 
     @Override

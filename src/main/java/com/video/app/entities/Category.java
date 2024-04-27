@@ -1,5 +1,6 @@
 package com.video.app.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -18,8 +19,9 @@ public class Category extends BaseEntity{
     private String slug;
     private String image;
     @ColumnDefault("false")
+    @JsonIgnore
     private Boolean deleted;
 
-    @OneToMany(mappedBy = "category")
+    @OneToMany(mappedBy = "category",fetch = FetchType.LAZY)
     private List<Video> videos;
 }
