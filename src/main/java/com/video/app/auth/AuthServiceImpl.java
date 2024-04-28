@@ -26,6 +26,8 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Transactional
 @Service
@@ -44,6 +46,7 @@ public class AuthServiceImpl implements AuthService {
     private OTPService otpService;
     @PersistenceContext
     private EntityManager entityManager;
+    private ExecutorService executorService = Executors.newFixedThreadPool(5);
 
     private User findUser(String string) {
         if (ValidationRegex.isEmail(string)) {
@@ -87,12 +90,18 @@ public class AuthServiceImpl implements AuthService {
             userForOTP.setUpdatedAt(new Date());
             userForOTP.setId(0L);
             accessToken = this.jwtService.generate(userForOTP);
-            this.mailService.sendMailOTP(user);
+            executorService.submit(() -> {
+                try {
+                    this.mailService.sendMailOTP(user);
+                } catch (MessagingException e) {
+                    throw new RuntimeException(e);
+                }
+            });
             data.put("user", userForOTP);
         }
         data.put("token", accessToken);
         data.put("TFA", user.getIsTwoFactorAuthentication());
-        return new DataResponse(user.getIsTwoFactorAuthentication()?"Check your OTP in email":"Login successfully!", data, true);
+        return new DataResponse(user.getIsTwoFactorAuthentication() ? "Check your OTP in email" : "Login successfully!", data, true);
     }
 
     @Override
@@ -129,11 +138,13 @@ public class AuthServiceImpl implements AuthService {
                 .isTwoFactorAuthentication(false)
                 .build();
         this.userRepository.save(user);
-        try {
-            mailService.sendMailThankForRegister(user);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
+        executorService.submit(() -> {
+            try {
+                mailService.sendMailThankForRegister(user);
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+        });
         return new DataResponse("Sign up successfully!", null, true);
     }
 
@@ -168,11 +179,13 @@ public class AuthServiceImpl implements AuthService {
             return new DataResponse("Token is expired! Please login with password again!", null, false);
         String email = this.jwtService.extractUsername(token);
         User user = this.userRepository.findByPhone(email);
-        try {
-            this.mailService.sendMailOTP(user);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
+        executorService.submit(() -> {
+            try {
+                this.mailService.sendMailOTP(user);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        });
         return new DataResponse("OTP is sent!", null, true);
     }
 }

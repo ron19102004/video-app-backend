@@ -1,5 +1,6 @@
 package com.video.app.jwt;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,11 +36,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         final String token = header.substring(7);
-        if (!this.jwtService.isTokenValid(token)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
         try {
+            if (!this.jwtService.isTokenValid(token)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
             String username = this.jwtService.extractUsername(token);
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
@@ -54,6 +55,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } catch (UsernameNotFoundException e) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND,"User not found");
+        } catch (ExpiredJwtException e){
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST,"Expired token!");
         }
     }
 }

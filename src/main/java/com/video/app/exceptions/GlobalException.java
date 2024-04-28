@@ -1,6 +1,7 @@
 package com.video.app.exceptions;
 
 import com.video.app.utils.DataResponse;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.mail.MessagingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,5 +62,12 @@ public abstract class GlobalException {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new DataResponse(exception.getMessage(), null, false));
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<?> handle(ExpiredJwtException exception) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new DataResponse("Token is expired!!!", null, false));
     }
 }

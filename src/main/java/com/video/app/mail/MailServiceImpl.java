@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import java.util.Date;
+
 
 @Service
 public class MailServiceImpl implements MailService {
@@ -89,6 +91,7 @@ public class MailServiceImpl implements MailService {
         Context context = new Context();
         context.setVariable("otp", otp);
         context.setVariable("fullName", user.getFullName());
+        context.setVariable("time_sent",new Date());
         String content = this.templateEngine.process(OTP_TEMPLATE_PATH,context);
         mimeMessageHelper.setText(content,true);
         this.javaMailSender.send(message);

@@ -56,6 +56,7 @@
         <a href="#" th:text="${otp}" class="otp" onclick="copyOTP(event)"></a>
       </p>
       <p class="signature">Best regards.</p>
+      <p class="signature" th:text="'Time:' + ${time_sent}"></p>
     </main>
     <script>
       function copyOTP(event) {
