@@ -33,6 +33,8 @@ public class Video extends BaseEntity {
     private Boolean vip;
     @Column(nullable = false)
     private Privacy privacy;
+    private String image;
+    private String src;
 
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false)

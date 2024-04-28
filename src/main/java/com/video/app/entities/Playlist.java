@@ -19,6 +19,7 @@ public class Playlist extends BaseEntity {
     private Privacy privacy;
     @ColumnDefault("false")
     private Boolean deleted;
+    private String image;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)

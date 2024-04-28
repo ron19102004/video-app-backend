@@ -35,6 +35,7 @@ public class User extends BaseEntity implements UserDetails {
     private Role role;
     @ColumnDefault("false")
     private Boolean isTwoFactorAuthentication;
+    private String imageURL;
 
     @JsonIgnore
     @OneToOne(mappedBy = "user",fetch = FetchType.LAZY)

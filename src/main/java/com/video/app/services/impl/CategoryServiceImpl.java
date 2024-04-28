@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Transactional
 @Service
@@ -25,6 +27,8 @@ public class CategoryServiceImpl implements CategoryService {
     private EntityManager entityManager;
     @Autowired
     private AwsS3Service awsS3Service;
+    private ExecutorService executorService = Executors.newFixedThreadPool(6);
+    private static final String FOLDER_IMAGE_AWS = "category_image";
 
     @Override
     public Category create(MultipartFile file, String name) {
@@ -46,16 +50,15 @@ public class CategoryServiceImpl implements CategoryService {
     public DataResponse updateImage(Long id, MultipartFile file) {
         Category category = this.categoryRepository.findById(id)
                 .orElseThrow(() -> new ServiceException("Category not found"));
-        String nameFile = null;
-        if (!(category.getImage().isEmpty() && category.getImage().isBlank())) {
-            String[] categorySplit = category.getImage().split("/");
-            nameFile = categorySplit[categorySplit.length - 1];
-        }
+        String imgUrl = category.getImage();
         String url = this.awsS3Service.upload(file, "category_image");
         category.setImage(url);
-        if (nameFile != null) {
-            this.awsS3Service.delete(nameFile, "category_image");
-        }
+        executorService.submit(() -> {
+            if (!imgUrl.isBlank()) {
+                String[] imgUrlSplit = imgUrl.split("/");
+                this.awsS3Service.delete(imgUrlSplit[imgUrlSplit.length - 1], FOLDER_IMAGE_AWS);
+            }
+        });
         return new DataResponse("Updated!", category.getImage(), true);
     }
 

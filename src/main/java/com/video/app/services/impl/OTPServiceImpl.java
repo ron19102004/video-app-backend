@@ -19,7 +19,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class OTPServiceImpl implements OTPService {
     @Autowired
     private OTPRepository otpRepository;
-    private final long EXPIRATION_TIME_MS = 5 * 60000;
+    private final long EXPIRATION_TIME_MS = 1 * 60000;
     @PersistenceContext
     private EntityManager entityManager;
 

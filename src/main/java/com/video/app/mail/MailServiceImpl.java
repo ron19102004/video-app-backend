@@ -27,6 +27,7 @@ public class MailServiceImpl implements MailService {
     private OTPService otpService;
     @Autowired
     private TemplateEngine templateEngine;
+    private static final String ENCODING = "UTF-8";
 
     private static final String THANK_FOR_REGISTERING_TEMPLATE_PATH = "mail/thank-for-register";
     private static final String THANK_FOR_REPORT_ISSUE_TEMPLATE_PATH = "mail/thank-for-report";
@@ -47,7 +48,7 @@ public class MailServiceImpl implements MailService {
     public void sendMailThankForRegister(User user) throws MessagingException {
         String subject = "Thank " + user.getFullName() + " for Registering!";
         MimeMessage message = this.javaMailSender.createMimeMessage();
-        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true);
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true,ENCODING);
         mimeMessageHelper.setFrom(USERNAME);
         mimeMessageHelper.setTo(user.getEmail());
         mimeMessageHelper.setSubject(subject);
@@ -64,7 +65,7 @@ public class MailServiceImpl implements MailService {
     @Override
     public void sendMailForReport(String email) throws MessagingException {
         MimeMessage message = this.javaMailSender.createMimeMessage();
-        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true);
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true,ENCODING);
         mimeMessageHelper.setFrom(USERNAME);
         mimeMessageHelper.setTo(email);
         mimeMessageHelper.setSubject("Thank for Report Issue");
@@ -83,7 +84,7 @@ public class MailServiceImpl implements MailService {
     public void sendMailOTP(User user) throws MessagingException {
         String otp = this.otpService.generate(user);
         MimeMessage message = this.javaMailSender.createMimeMessage();
-        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true);
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true, ENCODING);
         mimeMessageHelper.setTo(user.getEmail());
         mimeMessageHelper.setFrom(USERNAME);
         mimeMessageHelper.setSubject("Your OTP code");
@@ -91,9 +92,9 @@ public class MailServiceImpl implements MailService {
         Context context = new Context();
         context.setVariable("otp", otp);
         context.setVariable("fullName", user.getFullName());
-        context.setVariable("time_sent",new Date());
-        String content = this.templateEngine.process(OTP_TEMPLATE_PATH,context);
-        mimeMessageHelper.setText(content,true);
+        context.setVariable("time_sent", new Date());
+        String content = this.templateEngine.process(OTP_TEMPLATE_PATH, context);
+        mimeMessageHelper.setText(content, true);
         this.javaMailSender.send(message);
     }
 }
