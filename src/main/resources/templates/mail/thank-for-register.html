@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thank For Registering</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: whitesmoke;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.551);
+            border: 1px solid #ddd; /* Thêm border và định dạng */
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .signature {
+            font-style: italic;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 th:text="'Dear ' + ${fullName} + ','"></h1>
+    <p>
+        Thank you for registering an account with us! We're thrilled to have you join our community.<br/>
+        Your registration is an important step towards unlocking a world of possibilities. Whether you're here for the
+        latest updates, exclusive offers, or exciting opportunities, we're committed to providing you with a seamless
+        experience.<br/>
+        If you have any questions or need assistance, please don't hesitate to reach out to our support team. We're here
+        to help!<br/>
+        Once again, thank you for choosing us. We look forward to serving you and making your experience with us truly
+        exceptional.
+        <p >Best regards</p>
+    </p>
+    <h1 class="signature" th:text="${admin}"></h1>
+</div>
+</body>
+</html>

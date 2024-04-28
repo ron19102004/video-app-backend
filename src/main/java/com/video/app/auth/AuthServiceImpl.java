@@ -73,6 +73,7 @@ public class AuthServiceImpl implements AuthService {
         if (!user.getIsTwoFactorAuthentication()) {
             data.put("user", user);
         } else {
+            //use email for token to TFA
             User userForOTP = User.builder()
                     .username(user.getEmail())
                     .fullName("Unknown")
@@ -91,7 +92,7 @@ public class AuthServiceImpl implements AuthService {
         }
         data.put("token", accessToken);
         data.put("TFA", user.getIsTwoFactorAuthentication());
-        return new DataResponse("Login successfully!", data, true);
+        return new DataResponse(user.getIsTwoFactorAuthentication()?"Check your OTP in email":"Login successfully!", data, true);
     }
 
     @Override
