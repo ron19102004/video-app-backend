@@ -1,6 +1,6 @@
 package com.video.app.auth;
 
-import com.video.app.dto.auth.AuthLoginDto;
+import com.video.app.dto.auth.AuthLoginRequestDto;
 import com.video.app.dto.auth.AuthRegisterDto;
 import com.video.app.dto.auth.VerifyOTPDto;
 import com.video.app.exceptions.GlobalException;
@@ -21,8 +21,8 @@ public class AuthController extends GlobalException {
     private AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<DataResponse> login(@RequestBody AuthLoginDto authLoginDto) throws MessagingException {
-        return ResponseEntity.ok(this.authService.login(authLoginDto));
+    public ResponseEntity<DataResponse> login(@RequestBody AuthLoginRequestDto authLoginRequestDto) throws MessagingException {
+        return ResponseEntity.ok(this.authService.login(authLoginRequestDto));
     }
 
     @PostMapping("/register")

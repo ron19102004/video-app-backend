@@ -1,15 +1,18 @@
 package com.video.app.auth;
 
-import com.video.app.dto.auth.AuthLoginDto;
+import com.video.app.dto.auth.AuthLoginRequestDto;
+import com.video.app.dto.auth.AuthLoginResponseDto;
 import com.video.app.dto.auth.AuthRegisterDto;
 import com.video.app.dto.auth.VerifyOTPDto;
 import com.video.app.entities.Role;
 import com.video.app.entities.User;
+import com.video.app.entities.VIP;
 import com.video.app.exceptions.ServiceException;
 import com.video.app.jwt.JwtService;
 import com.video.app.mail.MailService;
 import com.video.app.repositories.UserRepository;
 import com.video.app.services.OTPService;
+import com.video.app.services.VIPService;
 import com.video.app.utils.DataResponse;
 import com.video.app.utils.ValidationRegex;
 import jakarta.mail.MessagingException;
@@ -47,6 +50,8 @@ public class AuthServiceImpl implements AuthService {
     @PersistenceContext
     private EntityManager entityManager;
     private ExecutorService executorService = Executors.newFixedThreadPool(5);
+    @Autowired
+    private VIPService vipService;
 
     private User findUser(String string) {
         if (ValidationRegex.isEmail(string)) {
@@ -59,24 +64,30 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public DataResponse login(AuthLoginDto authLoginDto) throws MessagingException {
-        User user = findUser(authLoginDto.username());
+    public DataResponse login(AuthLoginRequestDto authLoginRequestDto) throws MessagingException {
+        User user = findUser(authLoginRequestDto.username());
         if (user == null) {
             return new DataResponse("User not found", null, false);
         }
         Authentication authentication = this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 user.getUsername(),
-                authLoginDto.password()
+                authLoginRequestDto.password()
         ));
         if (!authentication.isAuthenticated()) {
             return new DataResponse("Password not valid", null, false);
         }
-        Map<String, Object> data = new HashMap<>();
-        String accessToken = this.jwtService.generate(user);
+        //check vip
+        VIP vip = null;
         if (!user.getIsTwoFactorAuthentication()) {
-            data.put("user", user);
-        } else {
-            //use email for token to TFA
+            vip = this.vipService.findLatestVIPByUserId(user.getId());
+            if (vip != null && this.vipService.isExpired(vip.getExpiredAt()) && vip.getActive()) {
+                vip = this.vipService.cancel(vip);
+            }
+        }
+        //create token
+        String accessToken = this.jwtService.generate(user);
+        User userResponse = user;
+        if (user.getIsTwoFactorAuthentication()) {
             User userForOTP = User.builder()
                     .username(user.getEmail())
                     .fullName("Unknown")
@@ -86,10 +97,9 @@ public class AuthServiceImpl implements AuthService {
                     .confirmed(false)
                     .isTwoFactorAuthentication(true)
                     .build();
-            userForOTP.setCreatedAt(new Date());
-            userForOTP.setUpdatedAt(new Date());
             userForOTP.setId(0L);
             accessToken = this.jwtService.generate(userForOTP);
+            userResponse = userForOTP;
             executorService.submit(() -> {
                 try {
                     this.mailService.sendMailOTP(user);
@@ -97,11 +107,11 @@ public class AuthServiceImpl implements AuthService {
                     throw new RuntimeException(e);
                 }
             });
-            data.put("user", userForOTP);
         }
-        data.put("token", accessToken);
-        data.put("TFA", user.getIsTwoFactorAuthentication());
-        return new DataResponse(user.getIsTwoFactorAuthentication() ? "Check your OTP in email" : "Login successfully!", data, true);
+        return new DataResponse(
+                user.getIsTwoFactorAuthentication() ? "Check your OTP in email" : "Login successfully!",
+                new AuthLoginResponseDto(userResponse, accessToken, user.getIsTwoFactorAuthentication(), vip),
+                true);
     }
 
     @Override
@@ -166,11 +176,14 @@ public class AuthServiceImpl implements AuthService {
         User user = this.userRepository.findByEmail(email);
         DataResponse verifyOTP = this.otpService.isOTPValid(verifyOTPDto.otp(), user);
         if (!verifyOTP.status()) return verifyOTP;
-        Map<String, Object> data = new HashMap<>();
+        VIP vip = this.vipService.findLatestVIPByUserId(user.getId());
+        if (vip != null && vip.getActive() && this.vipService.isExpired(vip.getExpiredAt())) {
+            vip = this.vipService.cancel(vip);
+        }
         String accessToken = this.jwtService.generate(user);
-        data.put("user", user);
-        data.put("token", accessToken);
-        return new DataResponse(verifyOTP.message(), data, true);
+        return new DataResponse(verifyOTP.message(),
+                new AuthLoginResponseDto(user, accessToken, user.getIsTwoFactorAuthentication(), vip),
+                true);
     }
 
     @Override

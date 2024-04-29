@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Thank You</title>
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          line-height: 1.6;
+          padding: 20px;
+          background-color: #f5f5f5;
+        }
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          background-color: #fff;
+          padding: 20px;
+          border-radius: 10px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1,
+        h2 {
+          color: #333;
+        }
+        p {
+          margin-bottom: 15px;
+        }
+        strong {
+          font-weight: bold;
+        }
+        .signature {
+          margin-top: 20px;
+          font-style: italic;
+          color: #777;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Thank You for Subscribing to Our VIP Service</h1>
+    <p>Dear <span th:text="${customerName}"></span>,</p>
+    <p>
+        I, <span th:text="${admin}"></span>, on behalf of
+        <span th:text="${appName}"></span>, am writing this letter to express
+        our sincere gratitude to you for subscribing and becoming a VIP member
+        of our service. We truly appreciate your support and trust in our
+        service.
+    </p>
+    <p>
+        Your decision to subscribe to our VIP service not only helps our app
+        grow but also enables us to provide the best features and experiences
+        for you and our community of users. As a VIP member, you will receive
+        numerous perks and special privileges from us, including
+        <span th:text="${benefits}"></span>.
+    </p>
+    <p>
+        We are committed to continuously improving our service and delivering
+        the highest value to you, our esteemed VIP member. If you have any
+        questions or feedback, please feel free to contact us via
+        <span th:text="${emailOrPhone}"></span>.
+    </p>
+    <p>
+        Once again, we sincerely thank you for joining us on this journey, and
+        we wish you an enjoyable and satisfying experience with our app.
+    </p>
+    <p class="signature">
+        Warm regards,<br/>
+        <span th:text="${admin}"></span>
+        <span th:text="${appName}"></span>
+    </p>
+</div>
+</body>
+</html>

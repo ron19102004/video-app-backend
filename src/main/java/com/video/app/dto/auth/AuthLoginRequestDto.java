@@ -3,7 +3,7 @@ package com.video.app.dto.auth;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 
-public record AuthLoginDto(
+public record AuthLoginRequestDto(
         @NotNull
         @Length(min = 5)
         String username,
