@@ -1,5 +1,6 @@
 package com.video.app.auth;
 
+import com.amazonaws.services.cognitoidp.model.UserNotFoundException;
 import com.video.app.dto.auth.AuthLoginRequestDto;
 import com.video.app.dto.auth.AuthLoginResponseDto;
 import com.video.app.dto.auth.AuthRegisterDto;
@@ -26,9 +27,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -191,7 +189,8 @@ public class AuthServiceImpl implements AuthService {
         if (!this.jwtService.isTokenValid(token))
             return new DataResponse("Token is expired! Please login with password again!", null, false);
         String email = this.jwtService.extractUsername(token);
-        User user = this.userRepository.findByPhone(email);
+        User user = this.userRepository.findByEmail(email);
+        if (user == null) throw new UserNotFoundException("User not found");
         executorService.submit(() -> {
             try {
                 this.mailService.sendMailOTP(user);

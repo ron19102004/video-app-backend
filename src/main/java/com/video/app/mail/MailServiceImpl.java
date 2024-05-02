@@ -84,7 +84,7 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public void sendMailOTP(User user) throws MessagingException {
-        String otp = this.otpService.generate(user);
+        String otp = this.otpService.generate(user.getEmail());
         MimeMessage message = this.javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true, ENCODING);
         mimeMessageHelper.setTo(user.getEmail());
@@ -100,25 +100,25 @@ public class MailServiceImpl implements MailService {
         this.javaMailSender.send(message);
     }
 
-    @Override
-    public void sendMailRegisterVIP(User user, VIP vip) throws MessagingException {
-        MimeMessage message = this.javaMailSender.createMimeMessage();
-        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true, "UTF-8");
-        mimeMessageHelper.setSubject("Thank You for Subscribing to Our VIP Service");
-        mimeMessageHelper.setFrom(USERNAME);
-        mimeMessageHelper.setTo(user.getEmail());
+@Override
+public void sendMailRegisterVIP(User user, VIP vip) throws MessagingException {
+    MimeMessage message = this.javaMailSender.createMimeMessage();
+    MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true, "UTF-8");
+    mimeMessageHelper.setSubject("Thank You for Subscribing to Our VIP Service");
+    mimeMessageHelper.setFrom(USERNAME);
+    mimeMessageHelper.setTo(user.getEmail());
 
-        String issued = vip.getIssuedAt().toString();
-        String expired = vip.getExpiredAt().toString();
-        String benefits = "use VIP app from " + issued + " to " + expired;
-        Context context = new Context();
-        context.setVariable("customerName", user.getFullName());
-        context.setVariable("admin", "Ron");
-        context.setVariable("emailOrPhone", "ron19102004@gmail.com");
-        context.setVariable("appName", "Video");
-        context.setVariable("benefits", benefits);
-        String content = this.templateEngine.process(THANK_FOR_REGISTER_VIP_PATH, context);
-        mimeMessageHelper.setText(content,true);
-        this.javaMailSender.send(message);
-    }
+    String issued = vip.getIssuedAt().toString();
+    String expired = vip.getExpiredAt().toString();
+    String benefits = "use VIP app from " + issued + " to " + expired;
+    Context context = new Context();
+    context.setVariable("customerName", user.getFullName());
+    context.setVariable("admin", "Ron");
+    context.setVariable("emailOrPhone", "ron19102004@gmail.com");
+    context.setVariable("appName", "Video");
+    context.setVariable("benefits", benefits);
+    String content = this.templateEngine.process(THANK_FOR_REGISTER_VIP_PATH, context);
+    mimeMessageHelper.setText(content, true);
+    this.javaMailSender.send(message);
+}
 }

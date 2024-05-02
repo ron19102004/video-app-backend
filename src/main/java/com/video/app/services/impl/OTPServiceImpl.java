@@ -1,8 +1,10 @@
 package com.video.app.services.impl;
 
+import com.amazonaws.services.cognitoidp.model.UserNotFoundException;
 import com.video.app.entities.OTP;
 import com.video.app.entities.User;
 import com.video.app.repositories.OTPRepository;
+import com.video.app.repositories.UserRepository;
 import com.video.app.services.OTPService;
 import com.video.app.utils.DataResponse;
 import jakarta.persistence.EntityManager;
@@ -14,11 +16,12 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.concurrent.ThreadLocalRandom;
 
-@Transactional
 @Service
 public class OTPServiceImpl implements OTPService {
     @Autowired
     private OTPRepository otpRepository;
+    @Autowired
+    private UserRepository userRepository;
     private final long EXPIRATION_TIME_MS = 1 * 60000;
     @PersistenceContext
     private EntityManager entityManager;
@@ -32,8 +35,11 @@ public class OTPServiceImpl implements OTPService {
         return otp.toString();
     }
 
+    @Transactional
     @Override
-    public String generate(User user) {
+    public String generate(String email) {
+        User user = this.userRepository.findByEmail(email);
+        if (user == null) throw new UserNotFoundException("User not found");
         String otp = this.generateOTP(6);
         OTP otpEntity = this.otpRepository.findById(user.getId()).orElse(null);
         if (otpEntity == null) {
