@@ -37,6 +37,7 @@ public class UserController {
         }
         return ResponseEntity.ok(new DataResponse("Info", new InfoUserResponseDto(vip, data), true));
     }
+
     @PatchMapping("/image")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<DataResponse> updateImage(@RequestParam("file") @NotNull MultipartFile file) {
@@ -57,5 +58,16 @@ public class UserController {
         }
         String username = authentication.getName();
         return ResponseEntity.ok(this.vipService.register(username, month));
+    }
+
+    @DeleteMapping("/vip/cancel")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<DataResponse> cancelVIP() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new DataResponse("User not authenticated or missing token", null, false));
+        }
+        String username = authentication.getName();
+        return ResponseEntity.ok(this.vipService.cancel(username));
     }
 }

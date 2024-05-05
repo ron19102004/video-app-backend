@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -37,12 +38,16 @@ public class VIPServiceImpl implements VIPService {
 
     @Override
     public VIP findLatestVIPByUserId(Long userId) {
-        return this.vipRepository.findLatestVIPByUserId(userId);
+        List<VIP> vips = this.vipRepository.findByUserId(userId);
+        if (vips.isEmpty()) return null;
+        return vips.get(0);
     }
 
     @Override
     public VIP findLatestVIPBYUsername(String username) {
-        return this.vipRepository.findLatestVIPByUsername(username);
+        List<VIP> vips = this.vipRepository.findByUsername(username);
+        if (vips.isEmpty()) return null;
+        return vips.get(0);
     }
 
     @Override
@@ -57,7 +62,7 @@ public class VIPServiceImpl implements VIPService {
         }
         User user = this.userService.findByUsername(username);
         if (user == null) return new DataResponse("User not found", null, false);
-        VIP vip = this.vipRepository.findLatestVIPByUsername(username);
+        VIP vip = this.findLatestVIPBYUsername(username);
         if (vip != null && vip.getActive() && !this.isExpired(vip.getExpiredAt())) {
             return new DataResponse("Already have a vip ", null, false);
         }
@@ -93,5 +98,15 @@ public class VIPServiceImpl implements VIPService {
         vip.setActive(false);
         this.entityManager.merge(vip);
         return vip;
+    }
+
+    @Override
+    public DataResponse cancel(String username) {
+        List<VIP> vips = this.vipRepository.findByUserUsernameAndActive(username, true);
+        if (vips.size() > 0 && vips.get(0).getActive()) {
+            this.cancel(vips.get(0));
+            return new DataResponse("Cancel successfully!!", null, true);
+        }
+        return new DataResponse("Don't cancel!!", null, false);
     }
 }

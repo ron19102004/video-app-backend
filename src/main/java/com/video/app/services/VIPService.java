@@ -11,4 +11,5 @@ public interface VIPService {
     boolean isExpired(Date expiredAt);
     DataResponse register(String username,int month);
     VIP cancel(VIP vip);
+    DataResponse cancel(String username);
 }
