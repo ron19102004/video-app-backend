@@ -43,7 +43,7 @@ public class PlaylistController {
 
     @DeleteMapping("")
     @PreAuthorize("hasAuthority('USER')")
-public ResponseEntity<DataResponse> delete(@RequestParam("id") Long id) {
+    public ResponseEntity<DataResponse> delete(@RequestParam("id") Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new DataResponse("User not authenticated or missing token", null, false));

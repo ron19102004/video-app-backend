@@ -86,7 +86,6 @@ public class AwsS3ServiceImpl implements AwsS3Service {
     public void delete(String fileName, String folder) {
         try {
             final String _fileName = folder + "/" + fileName;
-            System.out.println(_fileName);
             DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(this.bucketName, _fileName);
             this.s3Client.deleteObject(deleteObjectRequest);
         } catch (AmazonServiceException e) {

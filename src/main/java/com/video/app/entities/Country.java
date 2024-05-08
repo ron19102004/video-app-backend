@@ -20,7 +20,7 @@ public class Country extends BaseEntity{
     @ColumnDefault("false")
     @JsonIgnore
     private Boolean deleted;
-
+    @JsonIgnore
     @OneToMany(mappedBy = "country", fetch = FetchType.LAZY)
     private List<Video> videos;
 }

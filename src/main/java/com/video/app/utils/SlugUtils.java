@@ -2,7 +2,7 @@ package com.video.app.utils;
 
 import com.ibm.icu.text.Transliterator;
 
-public class ValidString {
+public class SlugUtils {
     public static String slugify(String input) {
 //        String slug = input.toLowerCase()
 //                // Loại bỏ các ký tự không phải chữ cái, số hoặc dấu cách

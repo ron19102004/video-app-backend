@@ -1,5 +1,6 @@
 package com.video.app.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -47,9 +48,12 @@ public class Video extends BaseEntity {
     private User uploader;
 
     @OneToMany(mappedBy = "video",fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<View> views;
+    @JsonIgnore
     @OneToMany(mappedBy = "video",fetch = FetchType.LAZY)
     private List<PlaylistVideo> playlistVideos;
+    @JsonIgnore
     @OneToMany(mappedBy = "video",fetch = FetchType.LAZY)
     private List<Comment> comments;
 }

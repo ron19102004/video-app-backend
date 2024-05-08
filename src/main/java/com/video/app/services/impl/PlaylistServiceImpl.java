@@ -5,6 +5,7 @@ import com.video.app.dto.playlist.CreatePlaylistDto;
 import com.video.app.entities.Playlist;
 import com.video.app.entities.Privacy;
 import com.video.app.entities.User;
+import com.video.app.exceptions.NotFoundEntity;
 import com.video.app.repositories.PlaylistRepository;
 import com.video.app.services.PlaylistService;
 import com.video.app.services.UserService;
@@ -35,7 +36,6 @@ public class PlaylistServiceImpl implements PlaylistService {
     @Override
     public Playlist add(String username, CreatePlaylistDto createPlaylistDto) {
         User user = this.userService.findByUsername(username);
-        if (user == null) throw new UserNotFoundException("User not found");
         Playlist playlist = Playlist.builder()
                 .privacy(createPlaylistDto.isPublic() ? Privacy.PUBLIC : Privacy.PRIVATE)
                 .name(createPlaylistDto.name())
@@ -49,7 +49,7 @@ public class PlaylistServiceImpl implements PlaylistService {
     @Override
     public DataResponse delete(String username, Long idPlaylist) {
         Playlist playlist = this.playlistRepository.findByUsernameAndId(username, idPlaylist);
-        if (playlist == null) return new DataResponse("Playlist not found", null, false);
+        if (playlist == null) throw new NotFoundEntity("Playlist not found");
         playlist.setDeleted(true);
         this.entityManager.merge(playlist);
         return new DataResponse("Deleted!", null, true);

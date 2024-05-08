@@ -34,6 +34,7 @@ public class User extends BaseEntity implements UserDetails {
     @Column(nullable = false)
     private Role role;
     @ColumnDefault("false")
+    @JsonIgnore
     private Boolean isTwoFactorAuthentication;
     private String imageURL;
 

@@ -61,7 +61,6 @@ public class VIPServiceImpl implements VIPService {
             return new DataResponse("Month incorrect!!! Just allowed 1,3,6", null, false);
         }
         User user = this.userService.findByUsername(username);
-        if (user == null) return new DataResponse("User not found", null, false);
         VIP vip = this.findLatestVIPBYUsername(username);
         if (vip != null && vip.getActive() && !this.isExpired(vip.getExpiredAt())) {
             return new DataResponse("Already have a vip ", null, false);

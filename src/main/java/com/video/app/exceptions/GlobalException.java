@@ -39,7 +39,7 @@ public abstract class GlobalException {
     @ExceptionHandler(ServiceException.class)
     public ResponseEntity<?> handle(ServiceException exception) {
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
+                .status(exception.getHttpStatus())
                 .body(new DataResponse(exception.getMessage(), null, false));
     }
 
@@ -69,5 +69,11 @@ public abstract class GlobalException {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new DataResponse("Token is expired!!!", null, false));
+    }
+    @ExceptionHandler(NotFoundEntity.class)
+    public ResponseEntity<?> handle(NotFoundEntity exception) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new DataResponse(exception.getMessage(), null, false));
     }
 }

@@ -1,5 +1,6 @@
 package com.video.app.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -19,6 +20,7 @@ public class PlaylistVideo extends BaseEntity {
     @JoinColumn(name = "video_id", referencedColumnName = "id", nullable = false)
     private Video video;
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "playlist_id", referencedColumnName = "id", nullable = false)
     private Playlist playlist;
 }

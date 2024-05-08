@@ -22,6 +22,7 @@ public class Category extends BaseEntity{
     @JsonIgnore
     private Boolean deleted;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "category",fetch = FetchType.LAZY)
     private List<Video> videos;
 }
