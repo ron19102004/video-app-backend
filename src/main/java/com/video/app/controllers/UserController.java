@@ -28,6 +28,10 @@ public class UserController {
     @Autowired
     private VIPService vipService;
 
+    @GetMapping("/info-confirmed/{id}")
+    public ResponseEntity<DataResponse> infoConfirmed(@PathVariable("id") Long id){
+        return ResponseEntity.ok(this.userService.infoConfirmed(id));
+    }
     @GetMapping("/info")
     @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
     public ResponseEntity<DataResponse> info() {

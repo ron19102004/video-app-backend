@@ -85,4 +85,11 @@ public class UserServiceImpl implements UserService {
         this.entityManager.merge(user);
         return new DataResponse("Changed!", null, true);
     }
+
+    @Override
+    public DataResponse infoConfirmed(Long id) {
+        User user = this.userRepository.findByUserIdAndConfirmed(id, true);
+        if (user == null) return new DataResponse("User not found", null, false);
+        return new DataResponse("Found", user, true);
+    }
 }

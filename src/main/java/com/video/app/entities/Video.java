@@ -22,7 +22,8 @@ public class Video extends BaseEntity {
     private String slug;
     @Column(nullable = false)
     private String duration;
-    @Column(nullable = false)
+    @Lob
+    @Column(nullable = false,columnDefinition = "TEXT")
     private String description;
     @Column(nullable = false)
     private String tag;
@@ -35,6 +36,7 @@ public class Video extends BaseEntity {
     @Column(nullable = false)
     private Privacy privacy;
     private String image;
+    @Column(columnDefinition = "TEXT")
     private String src;
 
     @ManyToOne

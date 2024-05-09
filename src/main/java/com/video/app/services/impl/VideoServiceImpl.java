@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -145,13 +146,13 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     public Page<Video> findAllWithPage(int pageNumber) {
-        Pageable pageable = PageRequest.of((pageNumber * 0), 9);
+        Pageable pageable = PageRequest.of((pageNumber * 0), 9, Sort.by("id").descending());
         return this.videoRepository.findAll(pageable);
     }
 
     @Override
     public Page<Video> findAllWithPageAndUploaderId(int pageNumber, Long uploaderId) {
-        Pageable pageable = PageRequest.of((pageNumber * 0), 9);
+        Pageable pageable = PageRequest.of((pageNumber * 0), 9,Sort.by("id").descending());
         return this.videoRepository.findAllByUploaderId(uploaderId, pageable);
     }
 }
