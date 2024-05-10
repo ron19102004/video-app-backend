@@ -5,6 +5,7 @@ import com.video.app.aws.AwsS3Service;
 import com.video.app.dto.user.ChangeInfoUserDto;
 import com.video.app.dto.user.ChangePasswordDto;
 import com.video.app.entities.User;
+import com.video.app.exceptions.NotFoundEntity;
 import com.video.app.repositories.UserRepository;
 import com.video.app.services.UserService;
 import com.video.app.utils.DataResponse;
@@ -87,9 +88,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public DataResponse infoConfirmed(Long id) {
+    public User infoConfirmed(Long id) {
         User user = this.userRepository.findByUserIdAndConfirmed(id, true);
-        if (user == null) return new DataResponse("User not found", null, false);
-        return new DataResponse("Found", user, true);
+        if (user == null) throw new NotFoundEntity("User not found");
+        return user;
     }
 }

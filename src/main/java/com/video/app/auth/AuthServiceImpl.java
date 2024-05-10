@@ -5,12 +5,11 @@ import com.video.app.dto.auth.AuthLoginRequestDto;
 import com.video.app.dto.auth.AuthLoginResponseDto;
 import com.video.app.dto.auth.AuthRegisterDto;
 import com.video.app.dto.auth.VerifyOTPDto;
-import com.video.app.entities.Role;
-import com.video.app.entities.User;
-import com.video.app.entities.VIP;
+import com.video.app.entities.*;
 import com.video.app.exceptions.ServiceException;
 import com.video.app.jwt.JwtService;
 import com.video.app.mail.MailService;
+import com.video.app.repositories.PlaylistRepository;
 import com.video.app.repositories.UserRepository;
 import com.video.app.services.OTPService;
 import com.video.app.services.VIPService;
@@ -50,6 +49,8 @@ public class AuthServiceImpl implements AuthService {
     private ExecutorService executorService = Executors.newFixedThreadPool(5);
     @Autowired
     private VIPService vipService;
+    @Autowired
+    private PlaylistRepository playlistRepository;
 
     private User findUser(String string) {
         if (ValidationRegex.isEmail(string)) {
@@ -109,7 +110,8 @@ public class AuthServiceImpl implements AuthService {
         return new DataResponse(
                 user.getIsTwoFactorAuthentication() ? "Check your OTP in email" : "Login successfully!",
                 new AuthLoginResponseDto(userResponse, accessToken, user.getIsTwoFactorAuthentication(), vip),
-                true);
+                true
+        );
     }
 
     @Override
@@ -145,7 +147,13 @@ public class AuthServiceImpl implements AuthService {
                 .phone(authRegisterDto.phone())
                 .isTwoFactorAuthentication(false)
                 .build();
-        this.userRepository.save(user);
+        User userSaved = this.userRepository.save(user);
+        Playlist playlist = Playlist.builder()
+                .name("Watch later")
+                .user(userSaved)
+                .privacy(Privacy.PRIVATE)
+                .build();
+        this.playlistRepository.save(playlist);
         executorService.submit(() -> {
             try {
                 mailService.sendMailThankForRegister(user);

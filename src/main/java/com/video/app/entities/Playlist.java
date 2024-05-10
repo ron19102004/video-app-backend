@@ -26,6 +26,7 @@ public class Playlist extends BaseEntity {
     @JsonIgnore
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
+    @JsonIgnore
     @OneToMany(mappedBy = "playlist",fetch = FetchType.LAZY)
     private List<PlaylistVideo> playlistVideos;
 }

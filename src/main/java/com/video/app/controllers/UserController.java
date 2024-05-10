@@ -2,21 +2,21 @@ package com.video.app.controllers;
 
 import com.video.app.dto.user.ChangeInfoUserDto;
 import com.video.app.dto.user.ChangePasswordDto;
+import com.video.app.dto.user.InfoConfirmedLoggedInDto;
 import com.video.app.dto.user.InfoUserResponseDto;
+import com.video.app.entities.Subscribe;
 import com.video.app.entities.User;
 import com.video.app.entities.VIP;
-import com.video.app.exceptions.ServiceException;
+import com.video.app.services.SubscribeService;
 import com.video.app.services.UserService;
 import com.video.app.services.VIPService;
 import com.video.app.utils.DataResponse;
 import com.video.app.utils.SecurityUtil;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,11 +27,24 @@ public class UserController {
     private UserService userService;
     @Autowired
     private VIPService vipService;
+    @Autowired
+    private SubscribeService subscribeService;
 
-    @GetMapping("/info-confirmed/{id}")
-    public ResponseEntity<DataResponse> infoConfirmed(@PathVariable("id") Long id){
-        return ResponseEntity.ok(this.userService.infoConfirmed(id));
+    @GetMapping("/info-confirmed")
+    public ResponseEntity<DataResponse> infoConfirmed(@RequestParam("id") Long id) {
+        return ResponseEntity.ok(new DataResponse("Found!", this.userService.infoConfirmed(id), true));
     }
+
+    @GetMapping("/loggedIn/info-confirmed")
+    @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
+    public ResponseEntity<DataResponse> infoConfirmedWhenLoggedIn(@RequestParam("id") Long id) {
+        User user = this.userService.infoConfirmed(id);
+        Authentication authentication = SecurityUtil.authentication();
+        Subscribe subscribe = this.subscribeService.isValidSubscribed(authentication.getName(), id);
+        return ResponseEntity.ok(new DataResponse("Found!", new InfoConfirmedLoggedInDto(user, subscribe != null), true));
+    }
+
+
     @GetMapping("/info")
     @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
     public ResponseEntity<DataResponse> info() {
@@ -86,4 +99,19 @@ public class UserController {
         return ResponseEntity.ok(this.userService.changePassword(authentication.getName(), changePasswordDto));
     }
 
+    @PostMapping("/subscribe")
+    @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
+    public ResponseEntity<DataResponse> subscribe(@RequestParam("id") Long id) {
+        Authentication authentication = SecurityUtil.authentication();
+        Subscribe subscribe = this.subscribeService.subscribe(authentication.getName(), id);
+        return ResponseEntity.ok(new DataResponse("Subscribed!", subscribe, true));
+    }
+
+    @DeleteMapping("/unsubscribe")
+    @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
+    public ResponseEntity<DataResponse> unsubscribe(@RequestParam("id") Long id) {
+        Authentication authentication = SecurityUtil.authentication();
+        this.subscribeService.unsubscribe(authentication.getName(), id);
+        return ResponseEntity.ok(new DataResponse("Unsubscribed!", null, true));
+    }
 }

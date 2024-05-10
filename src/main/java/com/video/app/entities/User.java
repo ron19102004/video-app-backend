@@ -39,7 +39,7 @@ public class User extends BaseEntity implements UserDetails {
     private String imageURL;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "user",fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     private OTP otp;
     @JsonIgnore
     @OneToMany(mappedBy = "uploader", fetch = FetchType.LAZY)
@@ -54,11 +54,11 @@ public class User extends BaseEntity implements UserDetails {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Comment> comments;
     @JsonIgnore
-    @OneToMany(mappedBy = "follower", fetch = FetchType.LAZY)
-    private List<Follow> followers;
+    @OneToMany(mappedBy = "subscribe", fetch = FetchType.LAZY)
+    private List<Subscribe> subscribes;
     @JsonIgnore
-    @OneToMany(mappedBy = "followed", fetch = FetchType.LAZY)
-    private List<Follow> listFollowed;
+    @OneToMany(mappedBy = "subscribed", fetch = FetchType.LAZY)
+    private List<Subscribe> listSubscribed;
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<VIP> vips;

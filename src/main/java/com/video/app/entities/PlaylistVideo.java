@@ -13,9 +13,6 @@ import org.hibernate.annotations.ColumnDefault;
 @NoArgsConstructor
 @Builder
 public class PlaylistVideo extends BaseEntity {
-    @ColumnDefault("false")
-    private Boolean deleted;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "video_id", referencedColumnName = "id", nullable = false)
     private Video video;
