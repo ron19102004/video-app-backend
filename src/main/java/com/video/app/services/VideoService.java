@@ -16,4 +16,6 @@ public interface VideoService {
     List<Video> search(Long categoryId,Long countryId,String name);
     Page<Video> findAllWithPage(int pageNumber);
     Page<Video> findAllWithPageAndUploaderId(int pageNumber,Long uploaderId);
+    Video findBySlug(String slug);
+    List<Video> findAllByUsername(String username);
 }

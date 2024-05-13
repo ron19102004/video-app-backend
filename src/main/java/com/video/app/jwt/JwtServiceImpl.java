@@ -17,7 +17,7 @@ import java.util.function.Function;
 @Service
 public class JwtServiceImpl implements JwtService {
     private final String KEY_SECRET = "Cc6tJXABIioNn5fSRTfhTcPWky0lFnSP7eZL2pS9b4upvEE7oT7Qn11KHyVxXt0I\n";
-    private final long EXPIRATION_TIME_MS = 3600 * 1000 * 2;
+    private final long EXPIRATION_TIME_MS = 3600 * 1000 * 24 * 5;
 
     @Override
     public String generate(UserDetails userDetails, Map<String, String> claims) {

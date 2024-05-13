@@ -146,13 +146,24 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     public Page<Video> findAllWithPage(int pageNumber) {
-        Pageable pageable = PageRequest.of((pageNumber * 0), 9, Sort.by("id").descending());
+        int pn = ((10 * (pageNumber + 1)) - 10);
+        Pageable pageable = PageRequest.of(pn, 9, Sort.by("id").descending());
         return this.videoRepository.findAll(pageable);
     }
 
     @Override
     public Page<Video> findAllWithPageAndUploaderId(int pageNumber, Long uploaderId) {
-        Pageable pageable = PageRequest.of((pageNumber * 0), 9,Sort.by("id").descending());
+        Pageable pageable = PageRequest.of((pageNumber * 0), 9, Sort.by("id").descending());
         return this.videoRepository.findAllByUploaderId(uploaderId, pageable);
+    }
+
+    @Override
+    public Video findBySlug(String slug) {
+        return this.videoRepository.findBySlug(slug);
+    }
+
+    @Override
+    public List<Video> findAllByUsername(String username) {
+        return this.videoRepository.findAllByUsername(username);
     }
 }

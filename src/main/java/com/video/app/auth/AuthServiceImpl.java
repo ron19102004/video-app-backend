@@ -152,6 +152,7 @@ public class AuthServiceImpl implements AuthService {
                 .name("Watch later")
                 .user(userSaved)
                 .privacy(Privacy.PRIVATE)
+                .deleted(false)
                 .build();
         this.playlistRepository.save(playlist);
         executorService.submit(() -> {

@@ -22,7 +22,6 @@ public class Video extends BaseEntity {
     private String slug;
     @Column(nullable = false)
     private String duration;
-    @Lob
     @Column(nullable = false,columnDefinition = "TEXT")
     private String description;
     @Column(nullable = false)

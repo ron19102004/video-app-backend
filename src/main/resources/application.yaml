@@ -1,3 +1,5 @@
+server:
+  port: 80
 spring:
   mail:
     host: smtp.gmail.com
@@ -20,7 +22,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/video_spring_app
     username: postgres
-    password: dung28011951
+    password: postgres
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:

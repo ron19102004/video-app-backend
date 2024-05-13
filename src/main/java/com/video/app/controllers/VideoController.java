@@ -61,4 +61,23 @@ public class VideoController {
         return ResponseEntity.ok(new DataResponse("Found", videos.getContent(), true));
     }
 
+    @GetMapping("/item/{slug}")
+    public ResponseEntity<DataResponse> findBySlug(@PathVariable("slug") String slug) {
+        Video video = this.videoService.findBySlug(slug);
+        DataResponse dataResponse;
+        if (video == null) dataResponse = new DataResponse("Slug not found video !", null, false);
+        else dataResponse = new DataResponse("Found!", video, true);
+        return ResponseEntity.ok(dataResponse);
+    }
+
+    @GetMapping("/my-video")
+    @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
+    public ResponseEntity<DataResponse> findAllByUsername() {
+        Authentication authentication = SecurityUtil.authentication();
+        return ResponseEntity.ok(new DataResponse("Found!",
+                        this.videoService.findAllByUsername(authentication.getName()),
+                        true
+                )
+        );
+    }
 }

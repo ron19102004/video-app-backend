@@ -63,7 +63,7 @@ public class UserController {
 
     @PatchMapping("/image")
     @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
-    public ResponseEntity<DataResponse> updateImage(@RequestParam("file") @NotNull MultipartFile file) {
+    public ResponseEntity<DataResponse> updateImage(@RequestParam("file") MultipartFile file) {
         Authentication authentication = SecurityUtil.authentication();
         String username = authentication.getName();
         return ResponseEntity.ok(this.userService.updateImage(username, file));

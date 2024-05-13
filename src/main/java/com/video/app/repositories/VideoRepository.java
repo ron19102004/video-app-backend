@@ -37,4 +37,9 @@ public interface VideoRepository extends JpaRepository<Video, Long> {
     @Query("SELECT v FROM Video v WHERE v.uploader.id = :uploaderId ORDER BY v.id DESC")
     Page<Video> findAllByUploaderId(@Param("uploaderId") Long uploaderId, Pageable pageable);
 
+    Video findBySlug(String slug);
+
+    @Query("SELECT v FROM Video v WHERE v.uploader.username = :username ORDER BY v.id DESC")
+    List<Video> findAllByUsername(@Param("username") String username);
+
 }
