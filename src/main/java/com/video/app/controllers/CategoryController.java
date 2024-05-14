@@ -55,5 +55,4 @@ public class CategoryController extends GlobalException {
     public ResponseEntity<DataResponse> delete(@NotNull @PathVariable("id") Long id) {
         return ResponseEntity.ok(this.categoryService.delete(id));
     }
-
 }

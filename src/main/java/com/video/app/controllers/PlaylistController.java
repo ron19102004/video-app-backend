@@ -20,7 +20,7 @@ public class PlaylistController {
     private PlaylistVideoService playlistVideoService;
 
     @PostMapping("/new")
-    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
     public ResponseEntity<DataResponse> add(@RequestBody CreatePlaylistDto createPlaylistDto) {
         Authentication authentication = SecurityUtil.authentication();
         return ResponseEntity.ok(new DataResponse(
@@ -31,21 +31,21 @@ public class PlaylistController {
     }
 
     @GetMapping("/my")
-    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
     public ResponseEntity<DataResponse> getMyPlaylist() {
         Authentication authentication = SecurityUtil.authentication();
         return ResponseEntity.ok(new DataResponse("Got!", this.playlistService.getMyPlaylist(authentication.getName()), true));
     }
 
     @DeleteMapping("")
-    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
     public ResponseEntity<DataResponse> delete(@RequestParam("id") Long id) {
         Authentication authentication = SecurityUtil.authentication();
         return ResponseEntity.ok(this.playlistService.delete(authentication.getName(), id));
     }
 
     @GetMapping("/videos")
-    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
     public ResponseEntity<DataResponse> getVideosPlaylist(@RequestParam("playlistId") Long playlistId) {
         Authentication authentication = SecurityUtil.authentication();
         return ResponseEntity.ok(new DataResponse("Data video of playlist",
@@ -54,7 +54,7 @@ public class PlaylistController {
     }
 
     @PostMapping("/add")
-    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
     public ResponseEntity<DataResponse> addVideoPlaylist(@RequestParam("playlistId") Long playlistId,
                                                          @RequestParam("videoId") Long videoId) {
         Authentication authentication = SecurityUtil.authentication();
@@ -63,7 +63,7 @@ public class PlaylistController {
     }
 
     @DeleteMapping("/video")
-    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
     public ResponseEntity<DataResponse> deleteVideoPlaylist(@RequestParam("videoPlaylistId") Long playlistVideoId) {
         Authentication authentication = SecurityUtil.authentication();
         this.playlistVideoService.delete(authentication.getName(), playlistVideoId);

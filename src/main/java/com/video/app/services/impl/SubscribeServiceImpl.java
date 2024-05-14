@@ -3,6 +3,7 @@ package com.video.app.services.impl;
 import com.video.app.entities.Subscribe;
 import com.video.app.entities.User;
 import com.video.app.exceptions.NotFoundEntity;
+import com.video.app.exceptions.ServiceException;
 import com.video.app.repositories.SubscribeRepository;
 import com.video.app.repositories.UserRepository;
 import com.video.app.services.SubscribeService;
@@ -25,6 +26,7 @@ public class SubscribeServiceImpl implements SubscribeService {
                 .orElseThrow(() -> new NotFoundEntity("User-subscribe not found"));
         User userBeSubscribed = this.userRepository.findById(idOfUserBeSubscribed)
                 .orElseThrow(() -> new NotFoundEntity("User-be-subscribed not found"));
+        if(usernameOfUserSubscribe.equals(userBeSubscribed.getUsername())) throw new ServiceException("User-be-subscribe is you");
         Subscribe subscribe = Subscribe.builder()
                 .subscribe(userSubscribe)
                 .subscribed(userBeSubscribed)
