@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
     private static final String FOLDER_IMAGE_AWS = "avatars";
     @PersistenceContext
     private EntityManager entityManager;
-    private ExecutorService executorService = Executors.newFixedThreadPool(5);
+    private final ExecutorService executorService = Executors.newFixedThreadPool(5);
     @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
@@ -42,7 +42,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByUsername(String username) {
-        return this.userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found"));
+        return this.userRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
     }
 

@@ -54,4 +54,14 @@ public class PlaylistServiceImpl implements PlaylistService {
         this.entityManager.merge(playlist);
         return new DataResponse("Deleted!", null, true);
     }
+
+    @Override
+    public Playlist findById(Long id) {
+        return this.playlistRepository.findById(id).orElseThrow(()->new NotFoundEntity("Playlist not found"));
+    }
+
+    @Override
+    public List<Playlist> getUserConfirmedPlaylist(Long id) {
+        return this.playlistRepository.findByUserIdAndDeletedAndPrivacy(id,false,Privacy.PUBLIC);
+    }
 }

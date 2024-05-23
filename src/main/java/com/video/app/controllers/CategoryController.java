@@ -39,6 +39,8 @@ public class CategoryController extends GlobalException {
     public ResponseEntity<DataResponse> updateImage(
             @NotNull @PathVariable("id") Long id,
             @NotNull @RequestParam("file") MultipartFile file) {
+        System.out.println(id);
+        System.out.println(file);
         return ResponseEntity.ok(this.categoryService.updateImage(id, file));
     }
 

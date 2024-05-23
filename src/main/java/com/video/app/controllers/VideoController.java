@@ -42,7 +42,7 @@ public class VideoController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<DataResponse> searchByCateCountry(@RequestParam(value = "category_id", required = false) Long categoryId,
+    public ResponseEntity<DataResponse> searchByCateCountryAndName(@RequestParam(value = "category_id", required = false) Long categoryId,
                                                             @RequestParam(value = "country_id", required = false) Long countryId,
                                                             @RequestParam(value = "name", required = false) String name) {
         return ResponseEntity.ok(new DataResponse("Found", this.videoService.search(categoryId, countryId, name), true));
@@ -69,7 +69,7 @@ public class VideoController {
         return ResponseEntity.ok(dataResponse);
     }
 
-    @GetMapping("/my-video")
+    @GetMapping("/my-videos")
     @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
     public ResponseEntity<DataResponse> findAllByUsername() {
         Authentication authentication = SecurityUtil.authentication();

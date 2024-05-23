@@ -9,4 +9,5 @@ public interface PlaylistVideoService {
 
     void delete(String username, Long playlistVideoId);
     List<Video> findByPlaylistId(String username, Long playlistId);
+    List<Video> findByPlaylistPublicId(Long playlistId);
 }

@@ -8,7 +8,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
     User findByUsername(String username);
-
     DataResponse updateImage(String username, MultipartFile file);
 
     DataResponse changeInfo(String username, ChangeInfoUserDto changeInfoUserDto);

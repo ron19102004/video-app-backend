@@ -2,6 +2,7 @@ package com.video.app.services.impl;
 
 import com.video.app.entities.Playlist;
 import com.video.app.entities.PlaylistVideo;
+import com.video.app.entities.Privacy;
 import com.video.app.entities.Video;
 import com.video.app.exceptions.NotFoundEntity;
 import com.video.app.exceptions.ServiceException;
@@ -61,6 +62,11 @@ public class PlaylistVideoServiceImpl implements PlaylistVideoService {
         if (!playlist.getUser().getUsername().equals(username))
             throw new ServiceException("Not Permission", HttpStatus.FORBIDDEN);
         return this.playlistVideoRepository.findAllVideoByPlaylistId(playlistId);
+    }
+
+    @Override
+    public List<Video> findByPlaylistPublicId(Long playlistId) {
+        return this.playlistVideoRepository.findAllVideoByPlaylistIdAndPrivacy(playlistId,Privacy.PUBLIC);
     }
 
 }

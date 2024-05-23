@@ -45,7 +45,7 @@ public class VideoServiceImpl implements VideoService {
     private AwsS3Service awsS3Service;
     private static final String FOLDER_VIDEO_IMAGE_AWS = "img_videos";
     private static final String FOLDER_VIDEO_AWS = "videos";
-    private ExecutorService executorService = Executors.newFixedThreadPool(10);
+    private final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
 
     @Override
@@ -122,23 +122,29 @@ public class VideoServiceImpl implements VideoService {
             this.categoryService.findById(categoryId);
             this.countryService.findById(countryId);
             return this.videoRepository.findAllByCountryIdAndCategoryIdAndNameLike(countryId, categoryId, name);
-        } else if (categoryId != null && countryId != null && name == null) {
+        }
+        if (categoryId != null && countryId != null) {
             this.categoryService.findById(categoryId);
             this.countryService.findById(countryId);
             return this.videoRepository.findAllByCountryIdAndCategoryId(countryId, categoryId);
-        } else if (categoryId != null && countryId == null && name != null) {
+        }
+        if (categoryId != null && name != null) {
             this.categoryService.findById(categoryId);
             return this.videoRepository.findAllByCategoryIdAndNameLike(categoryId, name);
-        } else if (categoryId != null && countryId == null && name == null) {
+        }
+        if (categoryId != null) {
             this.categoryService.findById(categoryId);
             return this.videoRepository.findAllByCategoryId(categoryId);
-        } else if (categoryId == null && countryId != null && name == null) {
+        }
+        if ( countryId != null && name == null) {
             this.countryService.findById(countryId);
             return this.videoRepository.findAllByCountryId(countryId);
-        } else if (categoryId == null && countryId != null && name != null) {
+        }
+        if (countryId != null) {
             this.countryService.findById(countryId);
             return this.videoRepository.findAllByCountryIdAndNameLike(countryId, name);
-        } else if (categoryId == null && countryId == null && name != null) {
+        }
+        if (name != null) {
             return this.videoRepository.findAllByNameLike(name);
         }
         return List.of();
@@ -153,7 +159,8 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     public Page<Video> findAllWithPageAndUploaderId(int pageNumber, Long uploaderId) {
-        Pageable pageable = PageRequest.of((pageNumber * 0), 9, Sort.by("id").descending());
+        int pn = ((10 * (pageNumber + 1)) - 10);
+        Pageable pageable = PageRequest.of(pn, 9, Sort.by("id").descending());
         return this.videoRepository.findAllByUploaderId(uploaderId, pageable);
     }
 

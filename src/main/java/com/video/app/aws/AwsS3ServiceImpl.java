@@ -43,15 +43,25 @@ public class AwsS3ServiceImpl implements AwsS3Service {
     private File convertMultipartFileToFile(MultipartFile multipartFile) {
         File fileConvert = null;
         try {
+            // Get the root path of the web application
             String rootPath = servletContext.getRealPath("/");
+            if (rootPath == null) {
+                throw new IOException("Failed to get the real path from servlet context");
+            }
+            // Create temp directory if it doesn't exist
             File tempDir = new File(rootPath + File.separator + "temp");
             if (!tempDir.exists()) {
-                tempDir.mkdirs();
+                if (!tempDir.mkdirs()) {
+                    throw new IOException("Failed to create temp directory");
+                }
             }
+            // Create a temporary file in the temp directory
             fileConvert = File.createTempFile("temp", null, tempDir);
+            // Transfer multipart file data to the temporary file
             multipartFile.transferTo(fileConvert);
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            System.err.println("Error converting multipart file: " + e.getMessage());
+            e.printStackTrace();
         }
         return fileConvert;
     }

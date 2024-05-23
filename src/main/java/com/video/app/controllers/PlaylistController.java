@@ -1,6 +1,8 @@
 package com.video.app.controllers;
 
 import com.video.app.dto.playlist.CreatePlaylistDto;
+import com.video.app.entities.Playlist;
+import com.video.app.entities.Privacy;
 import com.video.app.services.PlaylistService;
 import com.video.app.services.PlaylistVideoService;
 import com.video.app.utils.DataResponse;
@@ -36,6 +38,10 @@ public class PlaylistController {
         Authentication authentication = SecurityUtil.authentication();
         return ResponseEntity.ok(new DataResponse("Got!", this.playlistService.getMyPlaylist(authentication.getName()), true));
     }
+    @GetMapping("/user-confirmed")
+    public ResponseEntity<DataResponse> getUserConfirmedPlaylist(@RequestParam("userId") Long userId) {
+        return ResponseEntity.ok(new DataResponse("Got!", this.playlistService.getUserConfirmedPlaylist(userId), true));
+    }
 
     @DeleteMapping("")
     @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
@@ -50,6 +56,16 @@ public class PlaylistController {
         Authentication authentication = SecurityUtil.authentication();
         return ResponseEntity.ok(new DataResponse("Data video of playlist",
                 this.playlistVideoService.findByPlaylistId(authentication.getName(), playlistId),
+                true));
+    }
+
+    @GetMapping("/public/videos")
+    public ResponseEntity<DataResponse> getVideosPlaylistPublic(@RequestParam("playlistId") Long playlistId) {
+        Playlist playlist = this.playlistService.findById(playlistId);
+        if (playlist.getPrivacy().equals(Privacy.PRIVATE))
+            return ResponseEntity.ok(new DataResponse("Not permission", null, false));
+        return ResponseEntity.ok(new DataResponse("Data video of playlist",
+                this.playlistVideoService.findByPlaylistPublicId(playlistId),
                 true));
     }
 

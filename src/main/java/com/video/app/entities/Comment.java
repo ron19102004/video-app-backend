@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.util.List;
+
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "comments")
@@ -18,11 +20,18 @@ public class Comment extends BaseEntity{
     private Boolean deleted;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnore
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "video_id", referencedColumnName = "id", nullable = false)
     private Video video;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    @JoinColumn(name = "parent_comment_id", referencedColumnName = "id", nullable = true)
+    private Comment parentComment;
+
+    @OneToMany(mappedBy = "parentComment", orphanRemoval = true)
+    private List<Comment> replies;
 }
