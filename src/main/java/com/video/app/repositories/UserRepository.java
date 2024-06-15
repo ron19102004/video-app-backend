@@ -18,4 +18,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u WHERE u.id = :id AND u.confirmed = :confirmed")
     User findByUserIdAndConfirmed(@Param("id") Long id, @Param("confirmed") Boolean confirmed);
+
 }

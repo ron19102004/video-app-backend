@@ -37,8 +37,8 @@ public class PlaylistVideoServiceImpl implements PlaylistVideoService {
         if (!playlist.getUser().getUsername().equals(username))
             throw new ServiceException("Not Permission", HttpStatus.FORBIDDEN);
         Video video = this.videoRepository.findById(videoId).orElseThrow(() -> new NotFoundEntity("Playlist not found"));
-        PlaylistVideo plExist = this.playlistVideoRepository.findByPlaylistIdAndVideoId(playlistId, videoId);
-        if (plExist != null) throw new ServiceException("Video absolutely added !!!",HttpStatus.ACCEPTED);
+        PlaylistVideo plExist = this.playlistVideoRepository.findByPlaylistIdAndVideoId(playlistId, videoId, false);
+        if (plExist != null) throw new ServiceException("Video absolutely added !!!", HttpStatus.ACCEPTED);
         PlaylistVideo playlistVideo = PlaylistVideo.builder()
                 .playlist(playlist)
                 .video(video)
@@ -61,12 +61,12 @@ public class PlaylistVideoServiceImpl implements PlaylistVideoService {
         Playlist playlist = this.playlistRepository.findById(playlistId).orElseThrow(() -> new NotFoundEntity("Playlist not found"));
         if (!playlist.getUser().getUsername().equals(username))
             throw new ServiceException("Not Permission", HttpStatus.FORBIDDEN);
-        return this.playlistVideoRepository.findAllVideoByPlaylistId(playlistId);
+        return this.playlistVideoRepository.findAllVideoByPlaylistId(playlistId, false, Privacy.PUBLIC);
     }
 
     @Override
     public List<Video> findByPlaylistPublicId(Long playlistId) {
-        return this.playlistVideoRepository.findAllVideoByPlaylistIdAndPrivacy(playlistId,Privacy.PUBLIC);
+        return this.playlistVideoRepository.findAllVideoByPlaylistIdAndPrivacy(playlistId, Privacy.PUBLIC, false);
     }
 
 }

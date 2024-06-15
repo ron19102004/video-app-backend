@@ -61,7 +61,11 @@ public class ReportServiceImpl implements ReportService {
     public DataResponse check(Long id, String reply) {
         Report report = this.reportRepository.findByIdAndChecked(id, false);
         if (report == null) return new DataResponse("Report not found!", null, false);
-        //reply handling -- HANDLED YET
+        try {
+            mailService.reportHandle(report,reply);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
         report.setChecked(true);
         this.entityManager.merge(report);
         return new DataResponse("Handled!", null, true);

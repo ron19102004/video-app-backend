@@ -1,5 +1,6 @@
 package com.video.app.services.impl;
 
+import com.video.app.dto.subscribe.SubcribeInfoDto;
 import com.video.app.entities.Subscribe;
 import com.video.app.entities.User;
 import com.video.app.exceptions.NotFoundEntity;
@@ -26,7 +27,8 @@ public class SubscribeServiceImpl implements SubscribeService {
                 .orElseThrow(() -> new NotFoundEntity("User-subscribe not found"));
         User userBeSubscribed = this.userRepository.findById(idOfUserBeSubscribed)
                 .orElseThrow(() -> new NotFoundEntity("User-be-subscribed not found"));
-        if(usernameOfUserSubscribe.equals(userBeSubscribed.getUsername())) throw new ServiceException("User-be-subscribe is you");
+        if (usernameOfUserSubscribe.equals(userBeSubscribed.getUsername()))
+            throw new ServiceException("User-be-subscribe is you");
         Subscribe subscribe = Subscribe.builder()
                 .subscribe(userSubscribe)
                 .subscribed(userBeSubscribed)
@@ -43,6 +45,13 @@ public class SubscribeServiceImpl implements SubscribeService {
 
     @Override
     public Subscribe isValidSubscribed(String usernameOfUserSubscribe, Long idOfUserBeSubscribed) {
-        return this.subscribeRepository.findBySubscribeUsernameAndSubscribedId(usernameOfUserSubscribe,idOfUserBeSubscribed);
+        return this.subscribeRepository.findBySubscribeUsernameAndSubscribedId(usernameOfUserSubscribe, idOfUserBeSubscribed);
+    }
+
+    @Override
+    public SubcribeInfoDto getSubscribe(Long userId) {
+        Long subscribed = this.subscribeRepository.countSubscribed(userId);
+        Long subscribing = this.subscribeRepository.countSubscribing(userId);
+        return new SubcribeInfoDto(subscribed, subscribing);
     }
 }

@@ -8,6 +8,7 @@ import com.video.app.repositories.CategoryRepository;
 import com.video.app.services.CategoryService;
 import com.video.app.utils.DataResponse;
 import com.video.app.utils.SlugUtils;
+import com.video.app.utils.ValidationRegex;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -54,7 +55,7 @@ public class CategoryServiceImpl implements CategoryService {
         String imgUrl = category.getImage();
         String url = this.awsS3Service.upload(file, "category_image");
         category.setImage(url);
-        if (imgUrl != null && !imgUrl.isBlank()) {
+        if (imgUrl != null && !imgUrl.isBlank() && ValidationRegex.isAwsURL(imgUrl)) {
             executorService.submit(() -> {
                 String[] imgUrlSplit = imgUrl.split("/");
                 this.awsS3Service.delete(imgUrlSplit[imgUrlSplit.length - 1], FOLDER_IMAGE_AWS);

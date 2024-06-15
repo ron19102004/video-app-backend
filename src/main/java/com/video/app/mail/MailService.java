@@ -1,6 +1,7 @@
 package com.video.app.mail;
 
 import com.video.app.dto.mail.MailSendMessageDto;
+import com.video.app.entities.Report;
 import com.video.app.entities.User;
 import com.video.app.entities.VIP;
 import jakarta.mail.MessagingException;
@@ -15,4 +16,5 @@ public interface MailService {
     void sendMailOTP(User user) throws MessagingException;
 
     void sendMailRegisterVIP(User user, VIP vip) throws MessagingException;
+    void reportHandle(Report report,String reply) throws MessagingException;
 }

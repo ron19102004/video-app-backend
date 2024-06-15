@@ -13,4 +13,5 @@ public interface UserService {
     DataResponse changeInfo(String username, ChangeInfoUserDto changeInfoUserDto);
     DataResponse changePassword(String username, ChangePasswordDto changePasswordDto);
     User infoConfirmed(Long id);
+    DataResponse confirmUserHandle(String username);
 }

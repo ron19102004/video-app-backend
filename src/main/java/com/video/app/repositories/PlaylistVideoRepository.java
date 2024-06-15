@@ -12,14 +12,14 @@ import java.util.List;
 
 @Repository
 public interface PlaylistVideoRepository extends JpaRepository<PlaylistVideo, Long> {
-    @Query("SELECT pl.video FROM PlaylistVideo pl WHERE pl.playlist.id = :id ORDER BY pl.id DESC")
-    List<Video> findAllVideoByPlaylistId(@Param("id") Long id);
+    @Query("SELECT pl.video FROM PlaylistVideo pl WHERE pl.playlist.id = :id AND pl.video.deleted = :deleted AND pl.video.privacy = :privacy ORDER BY pl.id DESC")
+    List<Video> findAllVideoByPlaylistId(@Param("id") Long id,@Param("deleted") Boolean deleted, @Param("privacy") Privacy privacy);
 
-    @Query("SELECT pl.video FROM PlaylistVideo pl WHERE pl.playlist.id = :id AND pl.playlist.privacy = :privacy ORDER BY pl.id DESC")
-    List<Video> findAllVideoByPlaylistIdAndPrivacy(@Param("id") Long id, @Param("privacy") Privacy privacy);
+    @Query("SELECT pl.video FROM PlaylistVideo pl WHERE pl.playlist.id = :id AND pl.playlist.privacy = :privacy AND pl.video.deleted = :deleted ORDER BY pl.id DESC")
+    List<Video> findAllVideoByPlaylistIdAndPrivacy(@Param("id") Long id, @Param("privacy") Privacy privacy,@Param("deleted") Boolean deleted);
 
 
-    @Query("SELECT pl FROM PlaylistVideo pl WHERE pl.playlist.id = :playlistId AND pl.video.id = :videoId")
+    @Query("SELECT pl FROM PlaylistVideo pl WHERE pl.playlist.id = :playlistId AND pl.video.id = :videoId AND pl.video.deleted = :deleted")
     PlaylistVideo findByPlaylistIdAndVideoId(@Param("playlistId") Long playlistId,
-                                             @Param("videoId") Long videoId);
+                                             @Param("videoId") Long videoId,@Param("deleted") Boolean deleted);
 }

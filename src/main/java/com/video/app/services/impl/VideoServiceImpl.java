@@ -1,6 +1,7 @@
 package com.video.app.services.impl;
 
 import com.video.app.aws.AwsS3Service;
+import com.video.app.dto.video.ChangePrivacyDto;
 import com.video.app.dto.video.CreateInfoVideoDto;
 import com.video.app.entities.*;
 import com.video.app.exceptions.NotFoundEntity;
@@ -12,6 +13,7 @@ import com.video.app.services.UserService;
 import com.video.app.services.VideoService;
 import com.video.app.utils.DataResponse;
 import com.video.app.utils.SlugUtils;
+import com.video.app.utils.ValidationRegex;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -25,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -77,13 +80,13 @@ public class VideoServiceImpl implements VideoService {
     public DataResponse uploadImage(String username, Long id, MultipartFile file) {
         User user = this.userService.findByUsername(username);
         Video video = this.findById(id);
-        if (!user.getConfirmed() && user.getRole() != Role.ADMIN)
+        if (!user.getConfirmed() && !Objects.equals(user.getId(), video.getUploader().getId()))
             throw new ServiceException("You have not permission!!", HttpStatus.FORBIDDEN);
         String img = video.getImage();
         String url = this.awsS3Service.upload(file, FOLDER_VIDEO_IMAGE_AWS);
         video.setImage(url);
         this.entityManager.merge(video);
-        if (img != null && !img.isBlank()) {
+        if (img != null && !img.isBlank() && ValidationRegex.isAwsURL(img)) {
             this.executorService.submit(() -> {
                 String[] name = img.split("/");
                 this.awsS3Service.delete(name[name.length - 1], FOLDER_VIDEO_IMAGE_AWS);
@@ -96,13 +99,13 @@ public class VideoServiceImpl implements VideoService {
     public DataResponse uploadVideo(String username, Long id, MultipartFile file) {
         User user = this.userService.findByUsername(username);
         Video video = this.findById(id);
-        if (!user.getConfirmed() && user.getRole() != Role.ADMIN)
+        if (!user.getConfirmed() && !Objects.equals(user.getId(), video.getUploader().getId()))
             throw new ServiceException("You have not permission!!", HttpStatus.FORBIDDEN);
         String src = video.getSrc();
         String url = this.awsS3Service.upload(file, FOLDER_VIDEO_AWS);
         video.setSrc(url);
         this.entityManager.merge(video);
-        if (src != null && !src.isBlank()) {
+        if (src != null && !src.isBlank() && ValidationRegex.isAwsURL(src)) {
             this.executorService.submit(() -> {
                 String[] name = src.split("/");
                 this.awsS3Service.delete(name[name.length - 1], FOLDER_VIDEO_AWS);
@@ -121,47 +124,45 @@ public class VideoServiceImpl implements VideoService {
         if (categoryId != null && countryId != null && name != null) {
             this.categoryService.findById(categoryId);
             this.countryService.findById(countryId);
-            return this.videoRepository.findAllByCountryIdAndCategoryIdAndNameLike(countryId, categoryId, name);
+            return this.videoRepository.findAllByCountryIdAndCategoryIdAndNameLike(countryId, categoryId, name,false,Privacy.PUBLIC);
         }
         if (categoryId != null && countryId != null) {
             this.categoryService.findById(categoryId);
             this.countryService.findById(countryId);
-            return this.videoRepository.findAllByCountryIdAndCategoryId(countryId, categoryId);
+            return this.videoRepository.findAllByCountryIdAndCategoryId(countryId, categoryId,false,Privacy.PUBLIC);
         }
         if (categoryId != null && name != null) {
             this.categoryService.findById(categoryId);
-            return this.videoRepository.findAllByCategoryIdAndNameLike(categoryId, name);
+            return this.videoRepository.findAllByCategoryIdAndNameLike(categoryId, name,false,Privacy.PUBLIC);
         }
         if (categoryId != null) {
             this.categoryService.findById(categoryId);
-            return this.videoRepository.findAllByCategoryId(categoryId);
+            return this.videoRepository.findAllByCategoryId(categoryId,false,Privacy.PUBLIC);
         }
-        if ( countryId != null && name == null) {
+        if (countryId != null && name == null) {
             this.countryService.findById(countryId);
-            return this.videoRepository.findAllByCountryId(countryId);
+            return this.videoRepository.findAllByCountryId(countryId,false,Privacy.PUBLIC);
         }
         if (countryId != null) {
             this.countryService.findById(countryId);
-            return this.videoRepository.findAllByCountryIdAndNameLike(countryId, name);
+            return this.videoRepository.findAllByCountryIdAndNameLike(countryId, name,false,Privacy.PUBLIC);
         }
         if (name != null) {
-            return this.videoRepository.findAllByNameLike(name);
+            return this.videoRepository.findAllByNameLike(name,false,Privacy.PUBLIC);
         }
         return List.of();
     }
 
     @Override
     public Page<Video> findAllWithPage(int pageNumber) {
-        int pn = ((10 * (pageNumber + 1)) - 10);
-        Pageable pageable = PageRequest.of(pn, 9, Sort.by("id").descending());
-        return this.videoRepository.findAll(pageable);
+        Pageable pageable = PageRequest.of(pageNumber, 10, Sort.by("id").descending());
+        return this.videoRepository.findAllWithPage(false,pageable,Privacy.PUBLIC);
     }
 
     @Override
     public Page<Video> findAllWithPageAndUploaderId(int pageNumber, Long uploaderId) {
-        int pn = ((10 * (pageNumber + 1)) - 10);
-        Pageable pageable = PageRequest.of(pn, 9, Sort.by("id").descending());
-        return this.videoRepository.findAllByUploaderId(uploaderId, pageable);
+        Pageable pageable = PageRequest.of(pageNumber, 10, Sort.by("id").descending());
+        return this.videoRepository.findAllByUploaderId(uploaderId, pageable,false,Privacy.PUBLIC);
     }
 
     @Override
@@ -171,6 +172,29 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     public List<Video> findAllByUsername(String username) {
-        return this.videoRepository.findAllByUsername(username);
+        return this.videoRepository.findAllByUsername(username,false,Privacy.PUBLIC);
+    }
+
+    @Override
+    public DataResponse delete(String username, Long id) {
+        User user = this.userService.findByUsername(username);
+        Video video = this.findById(id);
+        if (!user.getConfirmed() && !Objects.equals(user.getId(), video.getUploader().getId()))
+            throw new ServiceException("You have not permission!!", HttpStatus.FORBIDDEN);
+        video.setDeleted(true);
+        this.entityManager.merge(video);
+        return new DataResponse("Deleted", null, true);
+    }
+
+    @Override
+    public DataResponse changePrivacyVip(String username, Long id, ChangePrivacyDto changePrivacyDto) {
+        User user = this.userService.findByUsername(username);
+        Video video = this.findById(id);
+        if (!user.getConfirmed() && !Objects.equals(user.getId(), video.getUploader().getId()))
+            throw new ServiceException("You have not permission!!", HttpStatus.FORBIDDEN);
+        video.setPrivacy(changePrivacyDto.isPublic() ? Privacy.PUBLIC : Privacy.PRIVATE);
+        video.setVip(changePrivacyDto.isVip());
+        this.entityManager.merge(video);
+        return new DataResponse("Changed!", null, true);
     }
 }

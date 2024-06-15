@@ -1,6 +1,7 @@
 package com.video.app.mail;
 
 import com.video.app.dto.mail.MailSendMessageDto;
+import com.video.app.entities.Report;
 import com.video.app.entities.User;
 import com.video.app.entities.VIP;
 import com.video.app.services.OTPService;
@@ -34,6 +35,7 @@ public class MailServiceImpl implements MailService {
     private static final String THANK_FOR_REPORT_ISSUE_TEMPLATE_PATH = "mail/thank-for-report";
     private static final String OTP_TEMPLATE_PATH = "mail/otp";
     private static final String THANK_FOR_REGISTER_VIP_PATH = "mail/thank-for-register-vip";
+    private static final String REPORT_REPLY = "mail/report";
 
 
     @Override
@@ -100,25 +102,42 @@ public class MailServiceImpl implements MailService {
         this.javaMailSender.send(message);
     }
 
-@Override
-public void sendMailRegisterVIP(User user, VIP vip) throws MessagingException {
-    MimeMessage message = this.javaMailSender.createMimeMessage();
-    MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true, "UTF-8");
-    mimeMessageHelper.setSubject("Thank You for Subscribing to Our VIP Service");
-    mimeMessageHelper.setFrom(USERNAME);
-    mimeMessageHelper.setTo(user.getEmail());
+    @Override
+    public void sendMailRegisterVIP(User user, VIP vip) throws MessagingException {
+        MimeMessage message = this.javaMailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true, ENCODING);
+        mimeMessageHelper.setSubject("Thank You for Subscribing to Our VIP Service");
+        mimeMessageHelper.setFrom(USERNAME);
+        mimeMessageHelper.setTo(user.getEmail());
 
-    String issued = vip.getIssuedAt().toString();
-    String expired = vip.getExpiredAt().toString();
-    String benefits = "use VIP app from " + issued + " to " + expired;
-    Context context = new Context();
-    context.setVariable("customerName", user.getFullName());
-    context.setVariable("admin", "Ron");
-    context.setVariable("emailOrPhone", "ron19102004@gmail.com");
-    context.setVariable("appName", "Video");
-    context.setVariable("benefits", benefits);
-    String content = this.templateEngine.process(THANK_FOR_REGISTER_VIP_PATH, context);
-    mimeMessageHelper.setText(content, true);
-    this.javaMailSender.send(message);
-}
+        String issued = vip.getIssuedAt().toString();
+        String expired = vip.getExpiredAt().toString();
+        String benefits = "use VIP app from " + issued + " to " + expired;
+        Context context = new Context();
+        context.setVariable("customerName", user.getFullName());
+        context.setVariable("admin", "Ron");
+        context.setVariable("emailOrPhone", "ron19102004@gmail.com");
+        context.setVariable("appName", "Video");
+        context.setVariable("benefits", benefits);
+        String content = this.templateEngine.process(THANK_FOR_REGISTER_VIP_PATH, context);
+        mimeMessageHelper.setText(content, true);
+        this.javaMailSender.send(message);
+    }
+
+    @Override
+    public void reportHandle(Report report, String reply) throws MessagingException {
+        MimeMessage message = this.javaMailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true, ENCODING);
+        mimeMessageHelper.setSubject("Reply report");
+        mimeMessageHelper.setFrom(USERNAME);
+        mimeMessageHelper.setTo(report.getEmail());
+
+        Context context = new Context();
+        context.setVariable("admin","Admin");
+        context.setVariable("content",reply);
+        context.setVariable("email",report.getEmail());
+        String content = this.templateEngine.process(REPORT_REPLY, context);
+        mimeMessageHelper.setText(content, true);
+        this.javaMailSender.send(message);
+    }
 }

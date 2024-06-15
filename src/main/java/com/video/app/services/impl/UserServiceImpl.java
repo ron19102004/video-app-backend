@@ -95,4 +95,12 @@ public class UserServiceImpl implements UserService {
         if (user == null) throw new NotFoundEntity("User not found");
         return user;
     }
+
+    @Override
+    public DataResponse confirmUserHandle(String username) {
+        User user = this.findByUsername(username);
+        user.setConfirmed(true);
+        this.entityManager.merge(user);
+        return new DataResponse("Confirmed", null, true);
+    }
 }

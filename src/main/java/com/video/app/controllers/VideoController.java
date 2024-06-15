@@ -1,5 +1,6 @@
 package com.video.app.controllers;
 
+import com.video.app.dto.video.ChangePrivacyDto;
 import com.video.app.dto.video.CreateInfoVideoDto;
 import com.video.app.entities.Video;
 import com.video.app.services.VideoService;
@@ -43,8 +44,8 @@ public class VideoController {
 
     @GetMapping("/search")
     public ResponseEntity<DataResponse> searchByCateCountryAndName(@RequestParam(value = "category_id", required = false) Long categoryId,
-                                                            @RequestParam(value = "country_id", required = false) Long countryId,
-                                                            @RequestParam(value = "name", required = false) String name) {
+                                                                   @RequestParam(value = "country_id", required = false) Long countryId,
+                                                                   @RequestParam(value = "name", required = false) String name) {
         return ResponseEntity.ok(new DataResponse("Found", this.videoService.search(categoryId, countryId, name), true));
     }
 
@@ -57,6 +58,7 @@ public class VideoController {
         } else {
             videos = this.videoService.findAllWithPage(pageNumber);
         }
+        System.out.println(videos);
         return ResponseEntity.ok(new DataResponse("Found", videos.getContent(), true));
     }
 
@@ -79,4 +81,21 @@ public class VideoController {
                 )
         );
     }
+
+    @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
+    @PatchMapping("/change-privacy-vip/{id}")
+    public ResponseEntity<DataResponse> changePrivacyVip(@PathVariable("id") Long id,
+                                                         @RequestBody() ChangePrivacyDto changePrivacyDto
+    ) {
+        Authentication authentication = SecurityUtil.authentication();
+        return ResponseEntity.ok(this.videoService.changePrivacyVip(authentication.getName(), id, changePrivacyDto));
+    }
+
+    @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<DataResponse> deleteVideo(@PathVariable("id") Long id) {
+        Authentication authentication = SecurityUtil.authentication();
+        return ResponseEntity.ok(this.videoService.delete(authentication.getName(), id));
+    }
+
 }

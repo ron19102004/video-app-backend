@@ -44,6 +44,11 @@ public class UserController {
         return ResponseEntity.ok(new DataResponse("Found!", new InfoConfirmedLoggedInDto(user, subscribe != null), true));
     }
 
+    @GetMapping("/subscribe-info")
+    public ResponseEntity<DataResponse> subscribeInfo(@RequestParam("id") Long userId) {
+        return ResponseEntity.ok(new DataResponse("Found!", this.subscribeService.getSubscribe(userId), true));
+    }
+
 
     @GetMapping("/info")
     @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
@@ -113,5 +118,11 @@ public class UserController {
         Authentication authentication = SecurityUtil.authentication();
         this.subscribeService.unsubscribe(authentication.getName(), id);
         return ResponseEntity.ok(new DataResponse("Unsubscribed!", null, true));
+    }
+
+    @PostMapping("/confirm-user/{username}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<DataResponse> confirmHanlde(@PathVariable("username") String username) {
+        return ResponseEntity.ok(this.userService.confirmUserHandle(username));
     }
 }
